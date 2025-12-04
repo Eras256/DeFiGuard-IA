@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "slither-analyzer": {
+      "command": "node lib/mcp/slither-mcp.ts"
+    },
+    "blockchain-data": {
+      "command": "node lib/mcp/blockchain-mcp.ts",
+      "env": [
+        {
+          "name": "NEXT_PUBLIC_THIRDWEB_CLIENT_ID"
+        }
+      ]
+    },
+    "defi-data": {
+      "command": "node lib/mcp/defi-data-mcp.ts"
+    }
+  }
+}
