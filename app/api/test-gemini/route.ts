@@ -4,9 +4,23 @@ import { callGemini } from "@/lib/ai/gemini-advanced";
 // Forzar runtime Node.js en Vercel
 export const runtime = "nodejs";
 
+// Cache para almacenar el último estado verificado
+let statusCache: {
+  success: boolean;
+  modelUsed?: string;
+  error?: string;
+  timestamp: number;
+} | null = null;
+
+// Tiempo de validez del cache (5 minutos)
+const CACHE_TTL = 5 * 60 * 1000;
+
 /**
  * Endpoint de prueba para validar conectividad con Gemini AI
  * GET /api/test-gemini
+ * 
+ * OPTIMIZACIÓN: Usa cache para evitar consumir tokens en cada verificación.
+ * Solo hace una llamada real a Gemini si el cache ha expirado.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -36,17 +50,40 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log("[API] Testing Gemini AI connection...");
+    // Verificar si hay un cache válido
+    const now = Date.now();
+    if (statusCache && (now - statusCache.timestamp) < CACHE_TTL) {
+      console.log("[API] ✅ Returning cached Gemini status (no tokens consumed)");
+      return NextResponse.json({
+        success: statusCache.success,
+        message: statusCache.success ? "Gemini AI is connected and working!" : undefined,
+        modelUsed: statusCache.modelUsed,
+        error: statusCache.error,
+        cached: true,
+        timestamp: new Date(statusCache.timestamp).toISOString(),
+      });
+    }
 
-    // Test simple con prompt básico
-    const testPrompt = "Say 'Hello, Gemini AI is working!' in JSON format: {\"message\": \"your response\"}";
+    // Si el cache expiró o no existe, hacer una verificación real
+    console.log("[API] Testing Gemini AI connection (consuming tokens)...");
+
+    // Test simple con prompt básico (mínimo para reducir consumo de tokens)
+    const testPrompt = "OK";
 
     const response = await callGemini(testPrompt, {
-      temperature: 0.7,
-      topP: 0.9,
-      topK: 40,
-      maxOutputTokens: 100,
+      temperature: 0.1,
+      topP: 0.1,
+      topK: 1,
+      maxOutputTokens: 5, // Mínimo posible para reducir consumo
     });
+
+    // Actualizar cache
+    statusCache = {
+      success: response.success,
+      modelUsed: response.modelUsed,
+      error: response.error,
+      timestamp: now,
+    };
 
     if (!response.success) {
       return NextResponse.json(
@@ -54,6 +91,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error: response.error || "Failed to connect to Gemini AI",
           modelUsed: response.modelUsed,
+          cached: false,
         },
         { status: 500 }
       );
@@ -65,7 +103,7 @@ export async function GET(request: NextRequest) {
       success: true,
       message: "Gemini AI is connected and working!",
       modelUsed: response.modelUsed,
-      response: response.data,
+      cached: false,
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
@@ -74,6 +112,7 @@ export async function GET(request: NextRequest) {
       {
         success: false,
         error: error.message || "Failed to test Gemini AI",
+        cached: false,
       },
       { status: 500 }
     );

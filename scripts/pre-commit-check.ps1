@@ -29,9 +29,9 @@ $suspiciousPatterns = @(
 $diffContent = git diff --cached
 
 foreach ($pattern in $suspiciousPatterns) {
-    $matches = $diffContent | Select-String -Pattern $pattern -CaseSensitive:$false
-    if ($matches) {
-        $filtered = $matches | Where-Object { 
+    $patternMatches = $diffContent | Select-String -Pattern $pattern -CaseSensitive:$false
+    if ($patternMatches) {
+        $filtered = $patternMatches | Where-Object { 
             $_.Line -notmatch 'your_|example|test|placeholder|TODO'
         }
         if ($filtered) {
