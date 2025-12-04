@@ -1,16 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ConnectButton } from "thirdweb/react";
-import { Shield, Menu, X } from "lucide-react";
+import { Shield, Menu, X, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { thirdwebClient } from "@/lib/thirdweb/client-config";
+import { CONTRACT_ADDRESSES } from "@/lib/constants";
 
 export function Navbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
 
   const navLinks = [
@@ -30,7 +31,8 @@ export function Navbar() {
               <Shield className="h-8 w-8 text-primary group-hover:rotate-12 transition-transform duration-300" />
               <div className="absolute inset-0 blur-xl bg-primary/50 group-hover:bg-primary/70 transition-all" />
             </div>
-            <span className="text-xl font-bold gradient-text">DeFiGuard AI</span>
+            <span className="text-xl font-bold gradient-text">DeFiGuard IA</span>
+            <span className="text-xs text-gray-500 hidden sm:inline">Base Sepolia</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -53,10 +55,45 @@ export function Navbar() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary rounded-full transition-all group-hover:w-full" />
               </Link>
             ))}
-          </div>
 
-          {/* Wallet Connect */}
-          <div className="hidden md:block">
+            {/* Contracts Dropdown */}
+            <div className="relative group">
+              <button className="text-sm font-medium text-muted-foreground hover:text-primary flex items-center gap-1">
+                Contracts <ExternalLink className="h-3 w-3" />
+              </button>
+              <div className="absolute top-full right-0 mt-2 w-80 glass rounded-lg p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                <div className="space-y-2 text-xs">
+                  <a
+                    href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.AUDIT_REGISTRY}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block hover:text-primary transition-colors"
+                  >
+                    <div className="font-medium">AuditRegistry</div>
+                    <div className="text-gray-500 font-mono">{CONTRACT_ADDRESSES.AUDIT_REGISTRY}</div>
+                  </a>
+                  <a
+                    href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.GUARD_NFT}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block hover:text-primary transition-colors"
+                  >
+                    <div className="font-medium">GuardNFT</div>
+                    <div className="text-gray-500 font-mono">{CONTRACT_ADDRESSES.GUARD_NFT}</div>
+                  </a>
+                  <a
+                    href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.GUARD_TOKEN}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block hover:text-primary transition-colors"
+                  >
+                    <div className="font-medium">GuardToken</div>
+                    <div className="text-gray-500 font-mono">{CONTRACT_ADDRESSES.GUARD_TOKEN}</div>
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <ConnectButton client={thirdwebClient} />
           </div>
 
@@ -67,11 +104,7 @@ export function Navbar() {
             className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>
       </div>

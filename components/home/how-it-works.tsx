@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Upload, Brain, Shield, CheckCircle } from "lucide-react";
+import { GeminiBadge } from "@/components/shared/gemini-badge";
 
 const steps = [
   {
@@ -13,7 +14,8 @@ const steps = [
   {
     icon: Brain,
     title: "AI Analysis",
-    description: "Gemini 2.5 Flash analyzes your contract using multiple detection methods and MCP agents.",
+    description: "Google Gemini AI analyzes your contract using multiple detection methods and MCP agents. Multi-model fallback ensures reliability.",
+    gemini: true,
   },
   {
     icon: Shield,
@@ -79,7 +81,12 @@ export function HowItWorks() {
                 <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
                   {step.title}
                 </h3>
-                <p className="text-sm text-muted-foreground">{step.description}</p>
+                <p className="text-sm text-muted-foreground mb-2">{step.description}</p>
+                {(step as any).gemini && (
+                  <div className="flex justify-center mt-2">
+                    <GeminiBadge variant="compact" />
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}

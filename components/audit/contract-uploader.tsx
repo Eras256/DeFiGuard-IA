@@ -1,22 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import { Upload, FileCode, Loader2 } from "lucide-react";
+import { Upload, FileCode, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SAMPLE_VULNERABLE_CONTRACT } from "@/lib/constants";
+import { GeminiBadge } from "@/components/shared/gemini-badge";
 
 interface ContractUploaderProps {
-  onAnalyze: (code: string) => void;
+  onAnalyze: (code: string, address?: string) => void;
   isAnalyzing: boolean;
 }
 
 export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderProps) {
   const [code, setCode] = useState("");
+  const [contractAddress, setContractAddress] = useState("");
 
   const handleAnalyze = () => {
     if (code.trim()) {
-      onAnalyze(code);
+      onAnalyze(code, contractAddress.trim() || undefined);
     }
   };
 
@@ -27,15 +29,33 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
   return (
     <Card className="glass">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileCode className="h-6 w-6 text-primary" />
-          Smart Contract Upload
-        </CardTitle>
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+          <CardTitle className="flex items-center gap-2">
+            <FileCode className="h-6 w-6 text-primary" />
+            Smart Contract Upload
+          </CardTitle>
+          <GeminiBadge variant="compact" />
+        </div>
         <CardDescription>
-          Paste your Solidity contract code below for AI-powered security analysis
+          Paste your Solidity contract code below for AI-powered security analysis using{" "}
+          <span className="text-primary font-semibold">Google Gemini AI</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div>
+          <label className="text-sm font-medium mb-2 block">Contract Address (Optional)</label>
+          <input
+            type="text"
+            value={contractAddress}
+            onChange={(e) => setContractAddress(e.target.value)}
+            placeholder="0x..."
+            className="w-full px-4 py-2 glass rounded-lg border border-white/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono text-sm transition-all"
+            disabled={isAnalyzing}
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            If provided, audit can be recorded on-chain after analysis
+          </p>
+        </div>
         <textarea
           value={code}
           onChange={(e) => setCode(e.target.value)}
@@ -53,13 +73,14 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
           >
             {isAnalyzing ? (
               <>
+                <Sparkles className="mr-2 h-5 w-5 animate-pulse text-primary" />
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Analyzing Contract...
+                Analyzing with Gemini AI...
               </>
             ) : (
               <>
                 <Upload className="mr-2 h-5 w-5" />
-                Analyze Contract
+                Analyze with Gemini AI
               </>
             )}
           </Button>
@@ -72,9 +93,12 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
             Load Sample (Vulnerable)
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground text-center">
-          Analysis typically completes in 15-30 seconds • Powered by Gemini 2.5 Flash
-        </p>
+        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          <Sparkles className="h-3 w-3 text-primary" />
+          <span>Analysis typically completes in 15-30 seconds</span>
+          <span>•</span>
+          <GeminiBadge variant="inline" />
+        </div>
       </CardContent>
     </Card>
   );

@@ -31,8 +31,11 @@ export function getRiskScoreColor(score: number): string {
   return "text-green-400";
 }
 
-export function formatTimestamp(timestamp: number): string {
-  return new Date(timestamp).toLocaleDateString("en-US", {
+export function formatTimestamp(timestamp: number | bigint): string {
+  const ts = typeof timestamp === "bigint" ? Number(timestamp) : timestamp;
+  // If timestamp is in seconds (blockchain), convert to milliseconds
+  const date = ts < 10000000000 ? new Date(ts * 1000) : new Date(ts);
+  return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",

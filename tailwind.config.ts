@@ -45,6 +45,9 @@ const config: Config = {
           pink: "#ff00ea",
           green: "#00ff94",
         },
+        "cyber-green": "#00ff94",
+        "cyber-purple": "#b400ff",
+        "cyber-pink": "#ff00ea",
       },
       borderRadius: {
         lg: "var(--radius)",

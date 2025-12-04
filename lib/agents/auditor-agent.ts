@@ -12,17 +12,22 @@ export class AuditorAgent {
   }
 
   async analyzeContract(code: string): Promise<VulnerabilityAnalysis> {
-    console.log("🔍 Starting security analysis...");
+    console.log("[AuditorAgent] 🔍 Starting security analysis...");
     
-    // Use Gemini for AI-powered analysis
-    const aiAnalysis = await analyzeContractWithGemini(code);
-    
-    // Static analysis would go here (Slither, Aderyn, etc.)
-    // For hackathon, we focus on AI analysis
-    
-    console.log(`✅ Analysis complete. Found ${aiAnalysis.vulnerabilities.length} vulnerabilities`);
-    
-    return aiAnalysis;
+    try {
+      // Use Gemini for AI-powered analysis with fallback multi-model
+      const aiAnalysis = await analyzeContractWithGemini(code);
+      
+      // Static analysis would go here (Slither, Aderyn, etc.)
+      // For hackathon, we focus on AI analysis
+      
+      console.log(`[AuditorAgent] ✅ Analysis complete. Found ${aiAnalysis.vulnerabilities.length} vulnerabilities`);
+      
+      return aiAnalysis;
+    } catch (error: any) {
+      console.error("[AuditorAgent] ❌ Analysis failed:", error);
+      throw new Error(`Failed to analyze contract: ${error.message}`);
+    }
   }
 
   async quickScan(code: string): Promise<{ riskScore: number; criticalCount: number }> {

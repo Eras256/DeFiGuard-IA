@@ -5,6 +5,8 @@ Built for **NullShot Hacks Season 0 - Track 1b**
 ![DeFiGuard AI](https://img.shields.io/badge/Built%20With-Gemini%202.5%20Flash-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Framework](https://img.shields.io/badge/Framework-Nullshot-purple)
+![Base Sepolia](https://img.shields.io/badge/Network-Base%20Sepolia-blue)
+![Verified](https://img.shields.io/badge/Contracts-Verified-success)
 
 ## 🚀 Overview
 
@@ -126,7 +128,17 @@ pnpm deploy
 # Ensure you have testnet ETH
 # Deploy to Base Sepolia
 pnpm deploy:contracts
+
+# Verify contracts (after deployment)
+# Requiere BASESCAN_API_KEY en .env.local
+npx hardhat verify --network baseSepolia --constructor-args scripts/verify-args-audit.js 0x9641E3A58aBe4c3a7320c3d176Da265A3a523F08
+npx hardhat verify --network baseSepolia --constructor-args scripts/verify-args-nft.js 0xc838c5486eD3Cc6EFA08Ac12747a4270Cc19405b
+npx hardhat verify --network baseSepolia --constructor-args scripts/verify-args-token.js 0x3d9f4d386b2a2C2bCdDC141aFD4593fCc9363440
 ```
+
+**✅ Contratos Desplegados y Verificados:**
+- Todos los contratos están verificados en Basescan y Sourcify
+- Ver sección [Contratos Desplegados](#-integración-web3) más abajo para direcciones y links
 
 ## 📊 Project Structure
 
@@ -209,6 +221,19 @@ This project is submitted to **NullShot Hacks Season 0 - Track 1b: Web App using
 - **GuardToken.sol** - Token ERC-20 para recompensas
 - **Multi-chain** - Base, Arbitrum, Ethereum Sepolia
 - **Wallet Integration** - Thirdweb ConnectButton
+
+#### 📍 Contratos Desplegados en Base Sepolia (Verificados)
+
+| Contrato | Dirección | Basescan | Sourcify |
+|----------|-----------|----------|----------|
+| **AuditRegistry** | [`0x9641E3A58aBe4c3a7320c3d176Da265A3a523F08`](https://sepolia.basescan.org/address/0x9641E3A58aBe4c3a7320c3d176Da265A3a523F08) | [✅ Verificado](https://sepolia.basescan.org/address/0x9641E3A58aBe4c3a7320c3d176Da265A3a523F08#code) | [✅ Verificado](https://repo.sourcify.dev/contracts/full_match/84532/0x9641E3A58aBe4c3a7320c3d176Da265A3a523F08/) |
+| **GuardNFT** | [`0xc838c5486eD3Cc6EFA08Ac12747a4270Cc19405b`](https://sepolia.basescan.org/address/0xc838c5486eD3Cc6EFA08Ac12747a4270Cc19405b) | [✅ Verificado](https://sepolia.basescan.org/address/0xc838c5486eD3Cc6EFA08Ac12747a4270Cc19405b#code) | [✅ Verificado](https://repo.sourcify.dev/contracts/full_match/84532/0xc838c5486eD3Cc6EFA08Ac12747a4270Cc19405b/) |
+| **GuardToken** | [`0x3d9f4d386b2a2C2bCdDC141aFD4593fCc9363440`](https://sepolia.basescan.org/address/0x3d9f4d386b2a2C2bCdDC141aFD4593fCc9363440) | [✅ Verificado](https://sepolia.basescan.org/address/0x3d9f4d386b2a2C2bCdDC141aFD4593fCc9363440#code) | [✅ Verificado](https://repo.sourcify.dev/contracts/full_match/84532/0x3d9f4d386b2a2C2bCdDC141aFD4593fCc9363440/) |
+
+**Network:** Base Sepolia (Chain ID: 84532)  
+**Deployer:** `0xF93F07b1b35b9DF13e2d53DbAd49396f0A9538D9`
+
+> 💡 **Nota:** ✅ Todos los contratos están verificados en **Basescan** y **Sourcify**, disponibles para inspección pública. Los contratos utilizan OpenZeppelin v5.0.2 y siguen las mejores prácticas de seguridad de diciembre 2025.
 
 ### Demo Video
 

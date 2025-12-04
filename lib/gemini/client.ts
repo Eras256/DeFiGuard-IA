@@ -1,6 +1,18 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// Validar que la API key existe
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+if (!GEMINI_API_KEY) {
+  console.warn("⚠️ GEMINI_API_KEY is not set in environment variables");
+  console.warn("   Please add GEMINI_API_KEY to your .env.local file");
+  console.warn("   Get your API key from: https://aistudio.google.com/app/apikey");
+} else {
+  console.log("✅ GEMINI_API_KEY loaded successfully");
+}
+
+// Crear instancia única de GoogleGenerativeAI
+const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 export interface VulnerabilityAnalysis {
   vulnerabilities: Vulnerability[];
@@ -20,18 +32,26 @@ export interface Vulnerability {
   similarExploits: string[];
 }
 
+export interface AnalysisResult {
+  analysis: VulnerabilityAnalysis;
+  modelUsed: string;
+}
+
 export async function analyzeContractWithGemini(
   code: string
-): Promise<VulnerabilityAnalysis> {
-  const model = genAI.getGenerativeModel({
-    model: process.env.GEMINI_MODEL || "gemini-2.5-flash-latest",
-    generationConfig: {
-      temperature: 0.2,
-      topP: 0.95,
-      topK: 40,
-      maxOutputTokens: 8192,
-    },
-  });
+): Promise<VulnerabilityAnalysis | AnalysisResult> {
+  if (!genAI) {
+    throw new Error("Gemini API key not configured. Please set GEMINI_API_KEY in .env.local");
+  }
+
+  // Modelos en orden de preferencia (fallback multi-modelo)
+  const modelsToTry = [
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+  ];
 
   const prompt = `You are an expert smart contract security auditor. Analyze this Solidity code for vulnerabilities.
 
@@ -73,35 +93,68 @@ Find ALL vulnerabilities including:
 - Delegatecall dangers
 - tx.origin authentication`;
 
-  try {
-    const result = await model.generateContent(prompt);
-    const response = result.response.text();
-    
-    // Clean response - remove markdown code blocks if present
-    const cleanedResponse = response
-      .replace(/```json\n?/g, "")
-      .replace(/```\n?/g, "")
-      .trim();
-    
-    const analysis = JSON.parse(cleanedResponse);
-    return analysis;
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    throw new Error("Failed to analyze contract with AI");
+  let lastError: Error | null = null;
+  let modelUsed: string | null = null;
+
+  // Intentar cada modelo en orden hasta que uno funcione
+  for (const modelName of modelsToTry) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          temperature: 0.2,
+          topP: 0.95,
+          topK: 40,
+          maxOutputTokens: 8192,
+        },
+      });
+
+      console.log(`[AI] Attempting to use model: ${modelName}`);
+      const result = await model.generateContent(prompt);
+      const response = result.response.text();
+      
+      // Clean response - remove markdown code blocks if present
+      const cleanedResponse = response
+        .replace(/```json\n?/g, "")
+        .replace(/```\n?/g, "")
+        .trim();
+      
+      // Intentar extraer JSON si está envuelto en markdown
+      const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
+      const jsonString = jsonMatch ? jsonMatch[0] : cleanedResponse;
+      
+      const analysis = JSON.parse(jsonString);
+      modelUsed = modelName;
+      console.log(`[AI] ✅ Successfully used model: ${modelName}`);
+      
+      // Retornar solo el análisis para mantener compatibilidad
+      return analysis;
+    } catch (error: any) {
+      lastError = error;
+      console.warn(`[AI] ⚠️ Model ${modelName} failed:`, error.message);
+      continue;
+    }
   }
+
+  console.error("Gemini API Error: All models failed", lastError);
+  throw new Error(`Failed to analyze contract with AI. All models failed. Last error: ${lastError?.message || "Unknown error"}`);
 }
 
 export async function generateRemediationCode(
   originalCode: string,
   vulnerability: Vulnerability
 ): Promise<string> {
-  const model = genAI.getGenerativeModel({
-    model: process.env.GEMINI_MODEL || "gemini-2.5-flash-latest",
-    generationConfig: {
-      temperature: 0.3,
-      maxOutputTokens: 4096,
-    },
-  });
+  if (!genAI) {
+    throw new Error("Gemini API key not configured");
+  }
+
+  const modelsToTry = [
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+  ];
 
   const prompt = `Given this vulnerable Solidity code and the identified vulnerability, provide the COMPLETE FIXED CODE.
 
@@ -119,20 +172,51 @@ Issue: ${vulnerability.description}
 
 Provide ONLY the fixed Solidity code. No explanations, no markdown blocks, just pure Solidity code.`;
 
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+  let lastError: Error | null = null;
+
+  for (const modelName of modelsToTry) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          temperature: 0.3,
+          maxOutputTokens: 4096,
+        },
+      });
+
+      const result = await model.generateContent(prompt);
+      const response = result.response.text();
+      
+      // Limpiar markdown si está presente
+      const cleaned = response
+        .replace(/```solidity\n?/g, "")
+        .replace(/```\n?/g, "")
+        .trim();
+      
+      return cleaned;
+    } catch (error: any) {
+      lastError = error;
+      continue;
+    }
+  }
+
+  throw new Error(`Failed to generate remediation code. All models failed. Last error: ${lastError?.message || "Unknown error"}`);
 }
 
 export async function explainVulnerability(
   vulnerability: Vulnerability
 ): Promise<string> {
-  const model = genAI.getGenerativeModel({
-    model: process.env.GEMINI_MODEL || "gemini-2.5-flash-latest",
-    generationConfig: {
-      temperature: 0.7,
-      maxOutputTokens: 2048,
-    },
-  });
+  if (!genAI) {
+    throw new Error("Gemini API key not configured");
+  }
+
+  const modelsToTry = [
+    "gemini-2.5-flash",
+    "gemini-2.5-pro",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+    "gemini-1.5-pro",
+  ];
 
   const prompt = `Explain this smart contract vulnerability in simple terms for developers:
 
@@ -148,7 +232,26 @@ Provide:
 
 Keep it concise and educational.`;
 
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+  let lastError: Error | null = null;
+
+  for (const modelName of modelsToTry) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 2048,
+        },
+      });
+
+      const result = await model.generateContent(prompt);
+      return result.response.text();
+    } catch (error: any) {
+      lastError = error;
+      continue;
+    }
+  }
+
+  throw new Error(`Failed to explain vulnerability. All models failed. Last error: ${lastError?.message || "Unknown error"}`);
 }
 

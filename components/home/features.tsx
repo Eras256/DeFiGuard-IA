@@ -14,12 +14,14 @@ import {
   Network,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { GeminiBadge } from "@/components/shared/gemini-badge";
 
 const features = [
   {
     icon: Cpu,
     title: "AI-Powered Analysis",
-    description: "Gemini 2.5 Flash analyzes contracts with 2M token context window for deep security insights.",
+    description: "Google Gemini AI analyzes contracts with 2M token context window for deep security insights. Multi-model fallback ensures reliability.",
+    gemini: true,
   },
   {
     icon: Shield,
@@ -92,11 +94,14 @@ export function Features() {
           >
             <Card className="h-full glass-hover group cursor-pointer">
               <CardHeader>
-                <div className="mb-4">
+                <div className="mb-4 flex items-center justify-between">
                   <div className="relative inline-block">
                     <feature.icon className="h-12 w-12 text-primary group-hover:scale-110 transition-transform duration-300" />
                     <div className="absolute inset-0 blur-xl bg-primary/30 group-hover:bg-primary/50 transition-all" />
                   </div>
+                  {(feature as any).gemini && (
+                    <GeminiBadge variant="compact" />
+                  )}
                 </div>
                 <CardTitle className="group-hover:text-primary transition-colors">
                   {feature.title}

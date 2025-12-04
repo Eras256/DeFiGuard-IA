@@ -1,24 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
-import { analyzeContractWithGemini } from "@/lib/gemini/client";
+import { analyzeContractWithGemini } from "@/lib/ai/gemini-advanced";
+
+// Forzar runtime Node.js en Vercel
+export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
     const { code } = await request.json();
 
-    if (!code) {
+    if (!code || typeof code !== "string") {
       return NextResponse.json(
-        { error: "Contract code is required" },
+        { success: false, error: "Contract code is required" },
         { status: 400 }
       );
     }
 
-    const analysis = await analyzeContractWithGemini(code);
+    const response = await analyzeContractWithGemini(code);
 
-    return NextResponse.json(analysis);
-  } catch (error) {
-    console.error("Gemini API Error:", error);
+    if (!response.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: response.error || "Analysis failed",
+        },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: response.data,
+      modelUsed: response.modelUsed,
+    });
+  } catch (error: any) {
+    console.error("[API] Gemini API Error:", error);
     return NextResponse.json(
-      { error: "Analysis failed" },
+      {
+        success: false,
+        error: error.message || "Analysis failed",
+      },
       { status: 500 }
     );
   }

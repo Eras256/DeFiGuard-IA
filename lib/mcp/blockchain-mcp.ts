@@ -33,18 +33,35 @@ export class BlockchainMCP {
   }
 
   async getTransactionHistory(address: string, limit: number = 10): Promise<any[]> {
-    // In production, fetch from explorer API
-    console.log(`📜 Fetching transaction history for ${address}...`);
-    
-    return [
-      {
-        hash: "0x123...",
-        from: "0xabc...",
-        to: address,
-        value: "1000000000000000000",
-        timestamp: Date.now() - 3600000,
+    try {
+      console.log(`📜 Fetching transaction history for ${address}...`);
+      
+      // Fetch from Basescan API if available
+      const apiKey = process.env.BASESCAN_API_KEY;
+      if (apiKey) {
+        const response = await fetch(
+          `https://api-sepolia.basescan.org/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=${limit}&sort=desc&apikey=${apiKey}`
+        );
+        const data = await response.json();
+        
+        if (data.status === "1" && data.result) {
+          return data.result.map((tx: any) => ({
+            hash: tx.hash,
+            from: tx.from,
+            to: tx.to,
+            value: tx.value,
+            timestamp: parseInt(tx.timeStamp) * 1000,
+            blockNumber: tx.blockNumber,
+          }));
+        }
       }
-    ];
+      
+      // Fallback: return empty array if API not available
+      return [];
+    } catch (error) {
+      console.error("Error fetching transaction history:", error);
+      return [];
+    }
   }
 
   private getChainById(chainId: number) {

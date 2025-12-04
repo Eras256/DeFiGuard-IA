@@ -3,12 +3,18 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Shield, Zap, Lock, TrendingUp, ArrowRight } from "lucide-react";
+import { Shield, Zap, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GeminiBadge } from "@/components/shared/gemini-badge";
 
-export function Hero() {
+interface HeroProps {
+  totalAudits: number;
+  loading?: boolean;
+}
+
+export function Hero({ totalAudits, loading = false }: HeroProps) {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 px-4 py-20">
       {/* Animated gradient orbs */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -37,11 +43,11 @@ export function Hero() {
         >
           {/* Badge */}
           <motion.div
-            className="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-8"
+            className="mb-8"
             whileHover={{ scale: 1.05 }}
           >
-            <Zap className="h-4 w-4 text-primary" />
-            <span className="text-sm">Powered by Gemini 2.5 Flash + MCP</span>
+            <GeminiBadge model="Gemini 2.5 Flash" />
+            <span className="ml-3 text-sm text-gray-400">+ Nullshot MCP Architecture</span>
           </motion.div>
 
           {/* Main heading */}
@@ -52,51 +58,64 @@ export function Hero() {
           </h1>
 
           {/* Subheading */}
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-12">
-            DeFiGuard AI analyzes your Solidity contracts in seconds, identifying
-            vulnerabilities before they become exploits. Multi-chain support,
-            instant results, and actionable fixes powered by advanced AI.
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            DeFiGuard IA analyzes Solidity contracts in 30 seconds using{" "}
+            <span className="text-primary font-semibold">Google Gemini AI</span>,
+            detecting vulnerabilities before deployment. Built with Nullshot MCP architecture.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link href="/audit">
-              <Button size="xl" variant="glow" className="group">
+              <Button size="lg" variant="glow" className="text-lg px-8 py-6 group">
                 Start Free Audit
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Link href="/dashboard">
-              <Button size="xl" variant="glass">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6">
                 View Dashboard
               </Button>
             </Link>
           </div>
 
-          {/* Stats */}
-          <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            {[
-              { icon: Shield, label: "Contracts Audited", value: "1,247" },
-              { icon: Lock, label: "Vulnerabilities Found", value: "3,892" },
-              { icon: TrendingUp, label: "Security Score Avg", value: "87%" },
-              { icon: Zap, label: "Avg Analysis Time", value: "<30s" },
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                className="glass p-6 rounded-lg"
-                whileHover={{ scale: 1.05, borderColor: "rgba(0, 240, 255, 0.5)" }}
-              >
-                <stat.icon className="h-8 w-8 text-primary mx-auto mb-3" />
-                <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Real-time Stats from Blockchain */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="glass rounded-lg p-6"
+            >
+              <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
+              <div className="text-4xl font-bold text-white mb-2">
+                {loading ? "..." : totalAudits.toLocaleString()}
+              </div>
+              <div className="text-gray-400">Audits on Base Sepolia</div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="glass rounded-lg p-6"
+            >
+              <Zap className="h-12 w-12 text-cyber-purple mx-auto mb-4" />
+              <div className="text-4xl font-bold text-white mb-2">30s</div>
+              <div className="text-gray-400">Average Analysis Time</div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="glass rounded-lg p-6"
+            >
+              <Lock className="h-12 w-12 text-cyber-pink mx-auto mb-4" />
+              <div className="text-4xl font-bold text-white mb-2">100%</div>
+              <div className="text-gray-400">On-Chain Verified</div>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

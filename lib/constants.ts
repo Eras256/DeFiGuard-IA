@@ -1,3 +1,10 @@
+// Contract addresses deployed on Base Sepolia
+export const CONTRACT_ADDRESSES = {
+  AUDIT_REGISTRY: process.env.NEXT_PUBLIC_AUDIT_REGISTRY_ADDRESS || "0x9641E3A58aBe4c3a7320c3d176Da265A3a523F08",
+  GUARD_NFT: process.env.NEXT_PUBLIC_GUARD_NFT_ADDRESS || "0xc838c5486eD3Cc6EFA08Ac12747a4270Cc19405b",
+  GUARD_TOKEN: process.env.NEXT_PUBLIC_GUARD_TOKEN_ADDRESS || "0x3d9f4d386b2a2C2bCdDC141aFD4593fCc9363440",
+} as const;
+
 export const SUPPORTED_CHAINS = {
   baseSepolia: {
     id: 84532,
