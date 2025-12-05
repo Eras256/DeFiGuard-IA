@@ -34,7 +34,8 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
     ).join('');
     // 0x (2) + d3a0 (4) + timestamp (8) + random (28) = 42 characters total
     // d3a0 is hex-valid and easy to identify as demo addresses (d3a0 = demo in hex-like)
-    const demoAddress = `0xd3a0${timestamp}${random}`.slice(0, 42);
+    // Convert to lowercase to ensure valid Ethereum address format
+    const demoAddress = `0xd3a0${timestamp}${random}`.slice(0, 42).toLowerCase();
     setContractAddress(demoAddress);
   };
 
@@ -56,7 +57,7 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
       <CardContent className="space-y-4">
         <div>
           <label className="text-sm font-medium mb-2 block">
-            Contract Address {contractAddress.startsWith('0xd3a0') && (
+            Contract Address {contractAddress.toLowerCase().startsWith('0xd3a0') && (
               <span className="text-primary text-xs">(Demo Address)</span>
             )}
           </label>
@@ -69,7 +70,7 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
             disabled={isAnalyzing}
           />
           <p className="text-xs text-muted-foreground mt-1">
-            {contractAddress.startsWith('0xd3a0') 
+            {contractAddress.toLowerCase().startsWith('0xd3a0') 
               ? "Demo address generated. You can record audits and mint NFTs multiple times for testing."
               : "If provided, audit can be recorded on-chain after analysis"}
           </p>

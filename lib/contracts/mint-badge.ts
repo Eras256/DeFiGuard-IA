@@ -106,7 +106,7 @@ export async function mintBadgeForContract(
   }
 
   // For demo addresses, allow multiple mints by generating unique contract address each time
-  const isDemoAddress = contractAddress.startsWith('0xd3a0');
+  const isDemoAddress = contractAddress.toLowerCase().startsWith('0xd3a0');
   let finalContractAddress = contractAddress;
   let finalRiskScore = riskScore;
   
@@ -116,13 +116,15 @@ export async function mintBadgeForContract(
     
     // For demo, always generate a new unique address for each mint to allow unlimited mints
     // This ensures each mint gets its own badge without conflicts
-    const walletHash = account.address.slice(2, 10); // First 8 chars of wallet (without 0x)
+    // Convert to lowercase to ensure valid address format
+    const walletHash = account.address.toLowerCase().slice(2, 10); // First 8 chars of wallet (without 0x), lowercase
     const timestamp = Date.now().toString(16).slice(-6).padStart(6, '0');
     const random = Array.from({ length: 28 }, () => 
       Math.floor(Math.random() * 16).toString(16)
     ).join('');
     // 0x (2) + d3a0 (4) + walletHash (8) + timestamp (6) + random (22) = 42 chars
-    finalContractAddress = `0xd3a0${walletHash}${timestamp}${random}`.slice(0, 42);
+    // Convert to lowercase to ensure valid Ethereum address format
+    finalContractAddress = `0xd3a0${walletHash}${timestamp}${random}`.slice(0, 42).toLowerCase();
     
     console.log("[mintBadgeForContract] Demo: Generating new address and recording audit:", finalContractAddress);
     

@@ -92,7 +92,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       // Wait a bit before checking to ensure blockchain state is updated
       const timeoutId = setTimeout(() => {
         console.log("[useEffect] Checking certification status...");
-        const isDemoAddress = addressToCheck.startsWith('0xd3a0');
+        const isDemoAddress = addressToCheck.toLowerCase().startsWith('0xd3a0');
         const finalRiskScore = isDemoAddress ? Math.min(analysis.riskScore, 20) : analysis.riskScore;
         // Pass riskScore to avoid fetching from contract (which may fail due to corrupted data)
         checkCertificationStatus(addressToCheck, finalRiskScore).then(status => {
@@ -145,20 +145,22 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       });
 
       // For demo addresses, generate unique address per wallet to allow multiple records/mints
-      const isDemoAddress = contractAddress.startsWith('0xd3a0');
+      const isDemoAddress = contractAddress.toLowerCase().startsWith('0xd3a0');
       let finalContractAddress = contractAddress;
       const finalRiskScore = isDemoAddress ? Math.min(analysis.riskScore, 20) : analysis.riskScore;
       
       if (isDemoAddress) {
         // Generate unique demo address that includes wallet address for uniqueness
         // This allows each wallet to have its own demo contract for unlimited records/mints
-        const walletHash = account.address.slice(2, 10); // First 8 chars of wallet (without 0x)
+        // Convert to lowercase to ensure valid address format
+        const walletHash = account.address.toLowerCase().slice(2, 10); // First 8 chars of wallet (without 0x), lowercase
         const timestamp = Date.now().toString(16).slice(-6).padStart(6, '0');
         const random = Array.from({ length: 28 }, () => 
           Math.floor(Math.random() * 16).toString(16)
         ).join('');
         // 0x (2) + d3a0 (4) + walletHash (8) + timestamp (6) + random (22) = 42 chars
-        finalContractAddress = `0xd3a0${walletHash}${timestamp}${random}`.slice(0, 42);
+        // Convert to lowercase to ensure valid Ethereum address format
+        finalContractAddress = `0xd3a0${walletHash}${timestamp}${random}`.slice(0, 42).toLowerCase();
         
         if (analysis.riskScore > 20) {
           toast.info("Demo mode: Risk score capped at 20 for certification eligibility");
@@ -247,7 +249,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
           console.log("[Record Audit] Checking certification status after delay...");
           // Use final risk score for demo addresses
           const addressToCheck = finalContractAddress || contractAddress;
-          const isDemoAddress = addressToCheck?.startsWith('0xd3a0');
+          const isDemoAddress = addressToCheck?.toLowerCase().startsWith('0xd3a0');
           const finalRiskScore = isDemoAddress ? Math.min(analysis.riskScore, 20) : analysis.riskScore;
           
           if (!addressToCheck) {
@@ -321,7 +323,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
     }
 
     // For demo addresses, allow minting even if badge exists (will generate new address)
-    const isDemoAddress = addressToUse.startsWith('0xd3a0');
+    const isDemoAddress = addressToUse.toLowerCase().startsWith('0xd3a0');
     if (certificationStatus.hasBadge && !isDemoAddress) {
       toast.info("You already have the NFT certificate for this contract");
       return;
@@ -378,7 +380,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       // Update status after a delay to allow blockchain to update
       setTimeout(async () => {
         const addressToCheck = finalContractAddress || contractAddress;
-        const isDemoAddress = addressToCheck?.startsWith('0xd3a0');
+        const isDemoAddress = addressToCheck?.toLowerCase().startsWith('0xd3a0');
         const finalRiskScore = isDemoAddress ? Math.min(analysis.riskScore, 20) : analysis.riskScore;
         
         if (addressToCheck) {
@@ -406,7 +408,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       } else if (errorMessage.includes("already has")) {
         // For demo addresses, this shouldn't happen as we generate new addresses
         const addressToCheck = finalContractAddress || contractAddress;
-        const isDemoAddress = addressToCheck?.startsWith('0xd3a0');
+        const isDemoAddress = addressToCheck?.toLowerCase().startsWith('0xd3a0');
         if (!isDemoAddress) {
           toast.info("You already have the NFT certificate for this contract.");
         }
@@ -602,7 +604,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                           
                               {(() => {
                                 const addressToUse = finalContractAddress || contractAddress;
-                                const isDemoAddress = addressToUse?.startsWith('0xd3a0');
+                                const isDemoAddress = addressToUse?.toLowerCase().startsWith('0xd3a0');
                                 // For demo addresses, always show mint button (will generate new address)
                                 const showMintButton = !certificationStatus.hasBadge || isDemoAddress;
                                 
