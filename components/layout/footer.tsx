@@ -2,29 +2,28 @@
 
 import React from "react";
 import Link from "next/link";
-import { Shield, Github, Twitter, MessageCircle } from "lucide-react";
+import { Shield, Twitter, Zap } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     product: [
-      { label: "Audit Contract", href: "/audit" },
-      { label: "Dashboard", href: "/dashboard" },
-      { label: "Monitoring", href: "/monitoring" },
-      { label: "Documentation", href: "#" },
+      { label: "Audit Contract", href: "/audit", description: "AI-powered smart contract security analysis" },
+      { label: "Dashboard", href: "/dashboard", description: "View audit history and statistics" },
+      { label: "Monitoring", href: "/monitoring", description: "Real-time contract monitoring" },
+      { label: "NFT Badges", href: "/dashboard", description: "View certification badges" },
     ],
     resources: [
-      { label: "GitHub", href: "https://github.com" },
-      { label: "Nullshot Framework", href: "https://nullshot.ai" },
-      { label: "Security Best Practices", href: "#" },
-      { label: "API Documentation", href: "#" },
+      { label: "NullShot Framework", href: "https://nullshot.ai", description: "Built on NullShot Architecture" },
+      { label: "Security Best Practices", href: "/security-best-practices", description: "Smart contract security guidelines" },
+      { label: "API Documentation", href: "/api-documentation", description: "Integration guides and API reference" },
+      { label: "Tutorials", href: "/tutorials", description: "Learn how to use DeFiGuard AI" },
     ],
     company: [
-      { label: "About", href: "#" },
-      { label: "Blog", href: "#" },
-      { label: "Careers", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: "About", href: "/about", description: "Learn about DeFiGuard AI" },
+      { label: "Blog", href: "/blog", description: "Latest news and updates" },
+      { label: "Contact", href: "/contact", description: "Get in touch with us" },
     ],
   };
 
@@ -39,50 +38,45 @@ export function Footer() {
               <span className="text-xl font-bold gradient-text">DeFiGuard AI</span>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              AI-powered smart contract security auditor using GEMINI IA + MCP NullShot Architecture powered by AI SDK. Integrated MCP servers enhance security analysis.
+              AI-powered smart contract security auditor using GEMINI IA + MCP NullShot Architecture powered by AI SDK. Integrated MCP servers enhance security analysis with comprehensive vulnerability detection.
             </p>
-            <div className="flex space-x-4">
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Github className="h-5 w-5" />
-              </a>
+            <div className="flex items-center gap-2 mb-4">
+              <Zap className="h-4 w-4 text-primary" />
+              <span className="text-xs text-muted-foreground">30s average analysis time</span>
+            </div>
+            <div className="flex items-center gap-4">
               <a
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
+                aria-label="Follow us on Twitter"
               >
                 <Twitter className="h-5 w-5" />
               </a>
-              <a
-                href="https://discord.gg/nullshot"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <MessageCircle className="h-5 w-5" />
-              </a>
+              <p className="text-xs text-muted-foreground">
+                Made by <span className="text-primary font-semibold">Vaiosx</span> & <span className="text-primary font-semibold">M0nsxx</span>
+              </p>
             </div>
           </div>
 
           {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h3 className="text-sm font-semibold uppercase tracking-wider mb-4">
-                {category}
+              <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 text-white">
+                {category === "product" ? "PRODUCT" : category === "resources" ? "RESOURCES" : "COMPANY"}
               </h3>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors block group"
                     >
-                      {link.label}
+                      <span className="group-hover:underline">{link.label}</span>
+                      {link.description && (
+                        <span className="block text-xs text-gray-500 mt-0.5">{link.description}</span>
+                      )}
                     </Link>
                   </li>
                 ))}
@@ -97,13 +91,13 @@ export function Footer() {
           </p>
           <div className="flex space-x-6 mt-4 sm:mt-0">
             <Link
-              href="#"
+              href="/privacy-policy"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Privacy Policy
             </Link>
             <Link
-              href="#"
+              href="/terms-of-service"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               Terms of Service

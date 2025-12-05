@@ -16,8 +16,16 @@ contract AuditRegistry is Ownable {
     /// @notice Risk score threshold for automatic certification
     uint256 public constant CERTIFICATION_THRESHOLD = 40;
     
-    /// @notice Maximum number of active audits per contract (prevents unbounded array growth)
+    /// @notice Maximum number of active audits per contract
     uint256 public constant MAX_AUDITS_PER_CONTRACT = 100;
+    
+    /// @notice Maximum total audits per contract (prevents unbounded array growth and DoS)
+    /// @dev When this limit is reached, oldest audit is removed (not just deactivated)
+    uint256 public constant MAX_TOTAL_AUDITS_PER_CONTRACT = 150;
+    
+    /// @notice Maximum active audits that can be retrieved in a single call (DoS protection)
+    /// @dev Prevents gas limit issues when retrieving all active audits
+    uint256 public constant MAX_ACTIVE_AUDITS_PER_CALL = 50;
 
     /**
      * @notice Audit record structure
@@ -39,6 +47,18 @@ contract AuditRegistry is Ownable {
 
     /// @notice Mapping from contract address to array of audit records
     mapping(address => Audit[]) public contractAudits;
+    
+    /// @notice Mapping from contract address to the owner who registered the audit
+    /// @dev This allows the contract owner to mint their certification badge
+    mapping(address => address) public contractOwner;
+    
+    /// @notice Mapping from contract address to the next write index (for circular buffer)
+    /// @dev When array is full, this tracks where to overwrite (circular buffer pattern)
+    mapping(address => uint256) private nextWriteIndex;
+    
+    /// @notice Mapping from contract address to total audits ever recorded (for this address)
+    /// @dev Used to determine if we should use circular overwrite or append
+    mapping(address => uint256) private totalAuditsForContract;
     
     /// @notice Mapping from contract address to certification status
     mapping(address => bool) public isCertified;
@@ -77,6 +97,8 @@ contract AuditRegistry is Ownable {
     error ZeroAddress();
     error AlreadyCertified(address contractAddress);
     error NotCertified(address contractAddress);
+    error AuditAlreadyDeactivated();
+    error TooManyActiveAudits(uint256 activeCount, uint256 maxAllowed);
 
     /**
      * @notice Constructor sets the contract owner
@@ -101,49 +123,101 @@ contract AuditRegistry is Ownable {
         string memory _reportHash,
         address _auditor
     ) external onlyOwner {
+        recordAuditInternal(_contractAddress, _riskScore, _reportHash, _auditor);
+    }
+    
+    /**
+     * @notice Record a new audit for a contract (backward compatible overload)
+     * @param _contractAddress Address of the contract being audited
+     * @param _riskScore Risk score from 0-100 (lower is better)
+     * @param _reportHash IPFS hash of the full audit report
+     * @dev Calls recordAuditInternal with msg.sender as auditor for backward compatibility
+     */
+    function recordAudit(
+        address _contractAddress,
+        uint256 _riskScore,
+        string memory _reportHash
+    ) external onlyOwner {
+        recordAuditInternal(_contractAddress, _riskScore, _reportHash, address(0));
+    }
+
+    /**
+     * @notice Internal function to record audit (used by both overloads)
+     * @dev Implements DoS protection by limiting total array size and removing oldest audits
+     * @dev Optimized to use single-pass iteration for gas efficiency
+     */
+    function recordAuditInternal(
+        address _contractAddress,
+        uint256 _riskScore,
+        string memory _reportHash,
+        address _auditor
+    ) internal {
         if (_contractAddress == address(0)) revert ZeroAddress();
         if (_riskScore > MAX_RISK_SCORE) revert InvalidRiskScore(_riskScore);
         
-        uint256 currentTimestamp = block.timestamp;
-        
-        // Use provided auditor address or default to msg.sender
-        address auditorAddress = _auditor == address(0) ? msg.sender : _auditor;
-        
-        Audit memory newAudit = Audit({
-            contractAddress: _contractAddress,
-            riskScore: _riskScore,
-            timestamp: currentTimestamp,
-            reportHash: _reportHash,
-            isActive: true,
-            auditor: auditorAddress
-        });
-        
         Audit[] storage audits = contractAudits[_contractAddress];
+        uint256 currentLength = audits.length;
+        uint256 auditIndex;
         
-        // Manage array size: deactivate oldest active audits if limit reached
-        // Count active audits first
-        uint256 activeCount = 0;
-        for (uint256 i = 0; i < audits.length; i++) {
-            if (audits[i].isActive) {
-                activeCount++;
-            }
-        }
-        
-        // If we've reached the limit, deactivate the oldest active audit
-        if (activeCount >= MAX_AUDITS_PER_CONTRACT) {
-            // Find the oldest active audit (first active one encountered)
-            for (uint256 i = 0; i < audits.length; i++) {
+        // OPTIMIZED: Single-pass iteration to count active audits and find oldest active
+        {
+            uint256 activeCount = 0;
+            uint256 oldestActiveIndex = type(uint256).max;
+            
+            for (uint256 i = 0; i < currentLength; i++) {
                 if (audits[i].isActive) {
-                    audits[i].isActive = false;
-                    emit AuditDeactivated(_contractAddress, i);
-                    break;
+                    activeCount++;
+                    if (oldestActiveIndex == type(uint256).max) {
+                        oldestActiveIndex = i;
+                    }
                 }
             }
+            
+            // Manage active audit limit: deactivate oldest active if limit reached
+            if (activeCount >= MAX_AUDITS_PER_CONTRACT && oldestActiveIndex != type(uint256).max) {
+                audits[oldestActiveIndex].isActive = false;
+                emit AuditDeactivated(_contractAddress, oldestActiveIndex);
+            }
         }
         
-        uint256 auditIndex = audits.length;
-        audits.push(newAudit);
+        // CRITICAL FIX: O(1) circular buffer pattern instead of O(N) array shifting
+        // This prevents DoS by keeping gas costs constant regardless of array size
+        address auditorAddress = _auditor == address(0) ? msg.sender : _auditor;
+        
+        if (currentLength < MAX_TOTAL_AUDITS_PER_CONTRACT) {
+            // Array not full yet: append new audit (O(1))
+            auditIndex = currentLength;
+            audits.push(Audit({
+                contractAddress: _contractAddress,
+                riskScore: _riskScore,
+                timestamp: block.timestamp,
+                reportHash: _reportHash,
+                isActive: true,
+                auditor: auditorAddress
+            }));
+        } else {
+            // Array is full: overwrite using circular buffer (O(1))
+            auditIndex = nextWriteIndex[_contractAddress];
+            audits[auditIndex] = Audit({
+                contractAddress: _contractAddress,
+                riskScore: _riskScore,
+                timestamp: block.timestamp,
+                reportHash: _reportHash,
+                isActive: true,
+                auditor: auditorAddress
+            });
+            // Update circular buffer index for next write
+            nextWriteIndex[_contractAddress] = (auditIndex + 1) % MAX_TOTAL_AUDITS_PER_CONTRACT;
+        }
+        
+        totalAuditsForContract[_contractAddress]++;
         totalAudits++;
+        
+        // Store the contract owner (the one who registered the audit)
+        // This allows them to mint their certification badge later
+        if (contractOwner[_contractAddress] == address(0)) {
+            contractOwner[_contractAddress] = auditorAddress;
+        }
         
         // Auto-certify if low risk and not already certified
         // Auto-revoke if risk score is above threshold (prevents stale certification)
@@ -153,7 +227,6 @@ contract AuditRegistry is Ownable {
                 emit CertificationGranted(_contractAddress, _riskScore);
             }
         } else {
-            // Revoke certification if new audit shows high risk
             if (isCertified[_contractAddress]) {
                 isCertified[_contractAddress] = false;
                 emit CertificationRevoked(_contractAddress);
@@ -163,26 +236,11 @@ contract AuditRegistry is Ownable {
         emit AuditRecorded(
             _contractAddress,
             _riskScore,
-            currentTimestamp,
+            block.timestamp,
             _reportHash,
             auditorAddress,
             auditIndex
         );
-    }
-    
-    /**
-     * @notice Record a new audit for a contract (backward compatible overload)
-     * @param _contractAddress Address of the contract being audited
-     * @param _riskScore Risk score from 0-100 (lower is better)
-     * @param _reportHash IPFS hash of the full audit report
-     * @dev Calls recordAudit with msg.sender as auditor for backward compatibility
-     */
-    function recordAudit(
-        address _contractAddress,
-        uint256 _riskScore,
-        string memory _reportHash
-    ) external onlyOwner {
-        recordAudit(_contractAddress, _riskScore, _reportHash, address(0));
     }
 
     /**
@@ -204,8 +262,13 @@ contract AuditRegistry is Ownable {
      * @notice Get all audit records for a contract
      * @param _contractAddress Address of the contract to query
      * @return Array of all audit records
-     * @dev WARNING: This function may revert if the array is too large (DoS risk).
-     * Consider using getAuditsPaginated for contracts with many audits.
+     * @dev ⚠️ WARNING: This function may REVERT due to gas limits if the array is large!
+     * @dev The array can contain up to MAX_TOTAL_AUDITS_PER_CONTRACT (150) audits.
+     * @dev Each Audit struct contains multiple fields, making this potentially very gas-expensive.
+     * @dev RECOMMENDED: Use getAuditsPaginated() instead for gas-efficient paginated access.
+     * @dev This function is kept for backward compatibility but paginated version is strongly recommended.
+     * @dev Note: No explicit limit here as MAX_TOTAL_AUDITS_PER_CONTRACT already limits array size,
+     *      but gas costs can still be high. Use pagination for better UX.
      */
     function getAllAudits(address _contractAddress)
         external
@@ -233,15 +296,15 @@ contract AuditRegistry is Ownable {
         returns (Audit[] memory)
     {
         Audit[] memory allAudits = contractAudits[_contractAddress];
-        uint256 totalAudits = allAudits.length;
+        uint256 totalAuditCount = allAudits.length;
         
-        if (_startIndex >= totalAudits) {
+        if (_startIndex >= totalAuditCount) {
             return new Audit[](0);
         }
         
         uint256 endIndex = _startIndex + _count;
-        if (endIndex > totalAudits) {
-            endIndex = totalAudits;
+        if (endIndex > totalAuditCount) {
+            endIndex = totalAuditCount;
         }
         
         uint256 resultLength = endIndex - _startIndex;
@@ -328,7 +391,7 @@ contract AuditRegistry is Ownable {
         if (_auditIndex >= audits.length) revert NoAuditsFound(_contractAddress);
         
         if (!audits[_auditIndex].isActive) {
-            revert("Audit already deactivated");
+            revert AuditAlreadyDeactivated();
         }
         
         audits[_auditIndex].isActive = false;
@@ -339,7 +402,10 @@ contract AuditRegistry is Ownable {
      * @notice Get only active audit records for a contract
      * @param _contractAddress Address of the contract to query
      * @return Array of active audit records
-     * @dev This function filters out deactivated audits, preventing DoS from large arrays
+     * @dev ⚠️ WARNING: This function has a hard limit to prevent DoS attacks!
+     * @dev Maximum MAX_ACTIVE_AUDITS_PER_CALL (50) active audits can be retrieved per call.
+     * @dev If more active audits exist, use getActiveAuditsPaginated() for paginated access.
+     * @dev This function is kept for backward compatibility but paginated version is recommended.
      */
     function getActiveAudits(address _contractAddress)
         external
@@ -349,11 +415,16 @@ contract AuditRegistry is Ownable {
         Audit[] memory allAudits = contractAudits[_contractAddress];
         uint256 activeCount = 0;
         
-        // Count active audits
+        // Count active audits first
         for (uint256 i = 0; i < allAudits.length; i++) {
             if (allAudits[i].isActive) {
                 activeCount++;
             }
+        }
+        
+        // CRITICAL: DoS protection - limit number of audits returned
+        if (activeCount > MAX_ACTIVE_AUDITS_PER_CALL) {
+            revert TooManyActiveAudits(activeCount, MAX_ACTIVE_AUDITS_PER_CALL);
         }
         
         // Build array of active audits
@@ -376,6 +447,7 @@ contract AuditRegistry is Ownable {
      * @param _startIndex Starting index (0-based) in the active audits array
      * @param _count Number of active records to retrieve
      * @return Array of active audit records
+     * @dev OPTIMIZED: Single-pass iteration for gas efficiency
      * @dev More gas-efficient than getActiveAudits for contracts with many audits
      */
     function getActiveAuditsPaginated(
@@ -389,50 +461,41 @@ contract AuditRegistry is Ownable {
     {
         Audit[] memory allAudits = contractAudits[_contractAddress];
         
-        // First pass: count active audits up to startIndex
-        uint256 activeCount = 0;
-        uint256 startActiveIndex = 0;
-        bool foundStart = false;
-        
-        for (uint256 i = 0; i < allAudits.length; i++) {
-            if (allAudits[i].isActive) {
-                if (activeCount == _startIndex && !foundStart) {
-                    startActiveIndex = i;
-                    foundStart = true;
-                }
-                if (!foundStart) {
-                    activeCount++;
-                }
-            }
-        }
-        
-        if (!foundStart) {
-            return new Audit[](0);
-        }
-        
-        // Second pass: collect active audits
-        uint256 collected = 0;
-        uint256 resultLength = _count;
+        // OPTIMIZED: Single pass to count total active and find start position
         uint256 totalActive = 0;
+        uint256 startPosition = type(uint256).max; // "Not found" marker
+        uint256 currentActiveIndex = 0;
         
-        // Count total active audits
+        // First, count total active audits and find start position in single pass
         for (uint256 i = 0; i < allAudits.length; i++) {
             if (allAudits[i].isActive) {
                 totalActive++;
+                // Find the starting position for pagination
+                if (currentActiveIndex == _startIndex && startPosition == type(uint256).max) {
+                    startPosition = i;
+                }
+                if (startPosition == type(uint256).max) {
+                    currentActiveIndex++;
+                }
             }
         }
         
-        if (_startIndex >= totalActive) {
+        // Validate start index
+        if (_startIndex >= totalActive || startPosition == type(uint256).max) {
             return new Audit[](0);
         }
         
+        // Calculate result length
+        uint256 resultLength = _count;
         if (_startIndex + _count > totalActive) {
             resultLength = totalActive - _startIndex;
         }
         
+        // Collect results in single pass from start position
         Audit[] memory result = new Audit[](resultLength);
+        uint256 collected = 0;
         
-        for (uint256 i = startActiveIndex; i < allAudits.length && collected < resultLength; i++) {
+        for (uint256 i = startPosition; i < allAudits.length && collected < resultLength; i++) {
             if (allAudits[i].isActive) {
                 result[collected] = allAudits[i];
                 collected++;

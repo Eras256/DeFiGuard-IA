@@ -9,23 +9,23 @@ const steps = [
   {
     icon: Upload,
     title: "Upload Contract",
-    description: "Paste your Solidity code or connect your GitHub repository. Supports all EVM-compatible chains.",
+    description: "Paste your Solidity code directly into the editor. We analyze contracts from any EVM-compatible chain (Ethereum, Base, Arbitrum, Optimism, Polygon, etc.).",
   },
   {
     icon: Brain,
     title: "AI Analysis",
-    description: "GEMINI IA + MCP NullShot Architecture powered by AI SDK analyzes your contract using multiple detection methods and integrated MCP servers (Slither, Blockchain, DeFi). Multi-model fallback ensures reliability.",
+    description: "GEMINI IA + MCP NullShot Architecture powered by AI SDK analyzes your contract using multiple detection methods and integrated MCP servers (Slither, Blockchain, DeFi). Multi-model fallback system ensures reliability.",
     gemini: true,
   },
   {
     icon: Shield,
     title: "Security Report",
-    description: "Receive detailed vulnerability report with severity levels, exploit scenarios, and fixes.",
+    description: "Receive a detailed vulnerability report with severity levels, exploit scenarios, and fixes.",
   },
   {
     icon: CheckCircle,
-    title: "Deploy Safely",
-    description: "Implement suggested fixes and deploy with confidence. Earn NFT certification badge.",
+    title: "Register & Certify",
+    description: "Implement the suggested fixes and register your audit on-chain (Base Sepolia). Earn a verifiable NFT certification badge stored on blockchain.",
   },
 ];
 

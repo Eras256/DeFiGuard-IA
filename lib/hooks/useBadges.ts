@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
-import { getBadgeByContract, getBadgeInfo, getTotalSupply, type BadgeInfo } from "@/lib/contracts/guard-nft";
+import { getBadgeByContract, getBadgeInfo, getTotalSupply, ownerOf, type BadgeInfo } from "@/lib/contracts/guard-nft";
 
 export function useBadges(userAddress?: string) {
   const account = useActiveAccount();
@@ -18,16 +18,32 @@ export function useBadges(userAddress?: string) {
         const total = await getTotalSupply();
         setTotalSupply(total);
         
-        // Fetch badges (simplified - in production you'd fetch by owner)
-        // For now, we'll fetch badges by iterating through token IDs
         const badgeList: Array<BadgeInfo & { tokenId: bigint }> = [];
+        const addressToFilter = userAddress || account?.address;
         
-        // Only fetch first 10 badges to avoid too many calls
-        for (let i = 1n; i <= total && i <= 10n; i++) {
+        // Fetch badges by iterating through token IDs
+        // Limit to first 20 badges for performance
+        const maxBadges = total > 20n ? 20n : total;
+        
+        for (let i = 1n; i <= maxBadges; i++) {
           try {
             const badge = await getBadgeInfo(i);
-            if (badge) {
-              badgeList.push({ ...badge, tokenId: i });
+            if (badge && badge.contractAddress && typeof badge.contractAddress === 'string') {
+              // If user address is provided, filter by owner
+              if (addressToFilter) {
+                try {
+                  const owner = await ownerOf(i);
+                  if (owner.toLowerCase() === addressToFilter.toLowerCase()) {
+                    badgeList.push({ ...badge, tokenId: i });
+                  }
+                } catch (err) {
+                  // If ownerOf fails, include badge anyway (might be a view issue)
+                  badgeList.push({ ...badge, tokenId: i });
+                }
+              } else {
+                // No filter, include all badges
+                badgeList.push({ ...badge, tokenId: i });
+              }
             }
           } catch (err) {
             // Token might not exist, skip
@@ -35,18 +51,25 @@ export function useBadges(userAddress?: string) {
           }
         }
         
+        // Sort by token ID (newest first)
+        badgeList.sort((a, b) => Number(b.tokenId) - Number(a.tokenId));
+        
         setBadges(badgeList);
         setError(null);
       } catch (err) {
         console.error("Error fetching badges:", err);
-        setError("Failed to fetch badges");
+        setError(err instanceof Error ? err.message : "Failed to fetch badges");
       } finally {
         setLoading(false);
       }
     }
 
     fetchBadges();
-  }, [userAddress]);
+    
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchBadges, 30000);
+    return () => clearInterval(interval);
+  }, [userAddress, account?.address]);
 
   return { badges, totalSupply, loading, error };
 }

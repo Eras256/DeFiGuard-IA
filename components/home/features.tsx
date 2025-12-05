@@ -19,28 +19,28 @@ import { GeminiBadge } from "@/components/shared/gemini-badge";
 const features = [
   {
     icon: Cpu,
-    title: "AI-Powered Analysis",
-    description: "GEMINI IA + MCP NullShot Architecture analyzes contracts using AI SDK with multi-model fallback. Integrates MCP servers (Slither, Blockchain, DeFi) for comprehensive security insights.",
+    title: "AI Analysis",
+    description: "GEMINI IA + MCP NullShot Architecture analyzes contracts using AI SDK with multi-model fallback system. Integrates MCP servers (Slither, Blockchain, DeFi) for comprehensive security insights.",
     gemini: true,
   },
   {
     icon: Shield,
     title: "Multi-Layer Detection",
-    description: "Combines static analysis, AI pattern recognition, and historical exploit correlation.",
+    description: "Combines static analysis, AI pattern recognition, and correlation with historical exploits.",
   },
   {
     icon: Zap,
-    title: "Lightning Fast",
-    description: "Complete security audit in under 30 seconds. No more waiting days for results.",
+    title: "Ultra Fast",
+    description: "Complete security audit in less than 30 seconds. No waiting days for results.",
   },
   {
     icon: Globe,
-    title: "Multi-Chain Support",
-    description: "Audits contracts on Ethereum, Base, Arbitrum, Optimism, Polygon, and Solana.",
+    title: "EVM-Compatible Analysis",
+    description: "Analyze contracts from any EVM-compatible chain (Ethereum, Base, Arbitrum, Optimism, Polygon). On-chain registration currently on Base Sepolia.",
   },
   {
     icon: Code,
-    title: "Automated Fixes",
+    title: "Automatic Fixes",
     description: "AI generates secure code patches for identified vulnerabilities automatically.",
   },
   {
@@ -79,7 +79,7 @@ export function Features() {
           <span className="gradient-text">Advanced Security Features</span>
         </h2>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Enterprise-grade smart contract auditing powered by GEMINI IA + MCP NullShot Architecture using AI SDK and integrated MCP servers
+          Enterprise-level smart contract auditing powered by GEMINI IA + MCP NullShot Architecture using AI SDK and integrated MCP servers
         </p>
       </motion.div>
 

@@ -11,6 +11,10 @@ import { CONTRACT_ADDRESSES } from "@/lib/constants";
 import { toast } from "sonner";
 import { GeminiStatus } from "@/components/shared/gemini-status";
 import { GeminiBadge } from "@/components/shared/gemini-badge";
+import { AuditStats } from "@/components/audit/audit-stats";
+import { AuditSearch } from "@/components/audit/audit-search";
+import { RecentAuditsList } from "@/components/audit/recent-audits-list";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface AnalysisResponse {
   success: boolean;
@@ -154,42 +158,69 @@ export default function AuditPage() {
         </Card>
       </div>
 
-      {/* Uploader */}
-      <ContractUploader onAnalyze={handleAnalyze} isAnalyzing={loading} />
+      {/* Audit Statistics */}
+      <div className="mb-8">
+        <AuditStats />
+      </div>
 
-      {/* Results */}
-      {loading && (
-        <Card className="glass mt-8 border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-              Analyzing Contract with Gemini AI...
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <div className="text-gray-400">
-                  Gemini AI is analyzing your contract for vulnerabilities...
+      {/* Tabs to organize content */}
+      <Tabs defaultValue="analyze" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="analyze">Analyze Contract</TabsTrigger>
+          <TabsTrigger value="search">Search Audits</TabsTrigger>
+          <TabsTrigger value="recent">Recent Audits</TabsTrigger>
+        </TabsList>
+
+        {/* Tab: Analyze Contract */}
+        <TabsContent value="analyze" className="space-y-6">
+          {/* Uploader */}
+          <ContractUploader onAnalyze={handleAnalyze} isAnalyzing={loading} />
+
+          {/* Results */}
+          {loading && (
+            <Card className="glass mt-8 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary animate-pulse" />
+                  Analyzing Contract with Gemini AI...
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <div className="text-gray-400">
+                      Gemini AI is analyzing your contract for vulnerabilities...
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-500 pl-11">
+                    Using multi-model fallback system for maximum reliability
+                  </div>
                 </div>
-              </div>
-              <div className="text-xs text-gray-500 pl-11">
-                Using multi-model fallback system for maximum reliability
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </CardContent>
+            </Card>
+          )}
 
-      {analysis && !loading && (
-        <AnalysisResults
-          analysis={analysis}
-          contractAddress={contractAddress}
-          contractCode={contractCode}
-          modelUsed={modelUsed}
-        />
-      )}
+          {analysis && !loading && (
+            <AnalysisResults
+              analysis={analysis}
+              contractAddress={contractAddress}
+              contractCode={contractCode}
+              modelUsed={modelUsed}
+            />
+          )}
+        </TabsContent>
+
+        {/* Tab: Search Audits */}
+        <TabsContent value="search">
+          <AuditSearch />
+        </TabsContent>
+
+        {/* Tab: Recent Audits */}
+        <TabsContent value="recent">
+          <RecentAuditsList />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

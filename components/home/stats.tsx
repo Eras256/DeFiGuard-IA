@@ -2,37 +2,82 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Shield, Zap, Award, TrendingUp } from "lucide-react";
+import { Shield, Zap, Award, TrendingUp, Database, AlertTriangle, CheckCircle, Loader2 } from "lucide-react";
 
 interface StatsProps {
   totalAudits: number;
+  totalNFTs: number;
   recentAudits: number;
+  certifiedContracts: number;
+  averageRiskScore: number;
+  highRiskAudits: number;
+  loading?: boolean;
 }
 
-export function Stats({ totalAudits, recentAudits }: StatsProps) {
+export function Stats({ 
+  totalAudits, 
+  totalNFTs,
+  recentAudits, 
+  certifiedContracts,
+  averageRiskScore,
+  highRiskAudits,
+  loading = false
+}: StatsProps) {
   const stats = [
     {
-      icon: Shield,
-      value: totalAudits.toString(),
-      label: "Total Audits on Base",
+      icon: Database,
+      value: loading ? "..." : totalAudits.toString(),
+      label: "Total On-Chain Audits",
+      sublabel: `${recentAudits} active audits`,
       color: "text-primary",
+    },
+    {
+      icon: Award,
+      value: loading ? "..." : totalNFTs.toString(),
+      label: "NFT Badges Minted",
+      sublabel: "Verifiable certifications",
+      color: "text-cyber-purple",
+    },
+    {
+      icon: CheckCircle,
+      value: loading ? "..." : certifiedContracts.toString(),
+      label: "Certified Contracts",
+      sublabel: "Risk score < 40",
+      color: "text-cyber-green",
+    },
+    {
+      icon: TrendingUp,
+      value: loading ? "..." : averageRiskScore.toString(),
+      label: "Average Risk Score",
+      sublabel: `From ${recentAudits} audit${recentAudits !== 1 ? 's' : ''}`,
+      color: averageRiskScore < 40 ? "text-cyber-green" : averageRiskScore < 60 ? "text-yellow-500" : "text-red-500",
+    },
+    {
+      icon: Shield,
+      value: loading ? "..." : recentAudits.toString(),
+      label: "Recent Audits",
+      sublabel: "Shown in dashboard",
+      color: "text-cyber-pink",
+    },
+    {
+      icon: AlertTriangle,
+      value: loading ? "..." : highRiskAudits.toString(),
+      label: "High Risk Detected",
+      sublabel: "Risk score ≥ 60",
+      color: "text-red-500",
     },
     {
       icon: Zap,
       value: "30s",
       label: "Average Analysis Time",
+      sublabel: "Complete AI analysis",
       color: "text-cyber-purple",
     },
     {
-      icon: Award,
-      value: recentAudits.toString(),
-      label: "Recent Audits",
-      color: "text-cyber-pink",
-    },
-    {
-      icon: TrendingUp,
+      icon: Database,
       value: "100%",
-      label: "On-Chain Verified",
+      label: "On-Chain Data",
+      sublabel: "No mock data",
       color: "text-cyber-green",
     },
   ];
@@ -47,37 +92,59 @@ export function Stats({ totalAudits, recentAudits }: StatsProps) {
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold mb-4">
-            Real-Time <span className="gradient-text">Blockchain Stats</span>
+            <span className="gradient-text">Real-Time</span> Statistics
           </h2>
           <p className="text-xl text-gray-400">
-            All data pulled directly from Base Sepolia - no mock data
+            All audit registrations and NFT badges stored on Base Sepolia testnet • 100% on-chain • Real blockchain data
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="glass rounded-lg p-6 text-center"
-            >
-              <stat.icon className={`h-12 w-12 ${stat.color} mx-auto mb-4`} />
-              <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
-              <div className="text-gray-400">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="glass rounded-lg p-6 text-center hover:border-primary/50 transition-all"
+              >
+                <stat.icon className={`h-12 w-12 ${stat.color} mx-auto mb-4`} />
+                <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
+                <div className="text-gray-300 font-medium mb-1">{stat.label}</div>
+                <div className="text-xs text-gray-500">{stat.sublabel}</div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* Live indicator */}
         <div className="mt-8 text-center">
           <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2">
             <div className="h-2 w-2 rounded-full bg-cyber-green animate-pulse"></div>
-            <span className="text-sm text-gray-400">Live data from Base Sepolia</span>
+            <span className="text-sm text-gray-400">
+              Live data from Base Sepolia • Auto-update every 30s
+            </span>
           </div>
         </div>
+
+        {/* Data Source Info */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-8 glass rounded-lg p-6 text-center"
+        >
+          <p className="text-sm text-gray-400">
+            <strong className="text-gray-300">On-Chain Storage:</strong> AuditRegistry contract (Base Sepolia) • GuardNFT contract (Base Sepolia) • 
+            All audit registrations and certifications are permanently stored on Base Sepolia testnet using Thirdweb SDK + Viem
+          </p>
+        </motion.div>
       </div>
     </section>
   );

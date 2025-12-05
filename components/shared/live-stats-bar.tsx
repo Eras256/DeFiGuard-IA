@@ -26,16 +26,16 @@ export function LiveStatsBar() {
     fetchStats();
     const interval = setInterval(fetchStats, 30000); // Update every 30s
 
-    // Escuchar evento cuando se registra un audit
+    // Listen for event when an audit is recorded
     const handleAuditRecorded = () => {
       console.log("[LiveStatsBar] Audit recorded, refreshing stats...");
-      // Esperar un poco para que la transacción se confirme
+      // Wait a bit for transaction to confirm
       setTimeout(() => {
         fetchStats();
       }, 3000);
     };
 
-    // Escuchar evento cuando se mintea un badge
+    // Listen for event when a badge is minted
     const handleBadgeMinted = () => {
       console.log("[LiveStatsBar] Badge minted, refreshing stats...");
       setTimeout(() => {

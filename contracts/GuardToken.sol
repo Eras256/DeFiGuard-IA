@@ -19,6 +19,10 @@ contract GuardToken is ERC20, Ownable {
     /// @notice Amount of tokens per airdrop claim
     uint256 public constant AIRDROP_AMOUNT = 100 * 10**18;
     
+    /// @notice Maximum batch size for batchMintRewards (DoS protection)
+    /// @dev Prevents gas limit issues when minting to many recipients
+    uint256 public constant MAX_BATCH_SIZE = 100;
+    
     /// @notice Mapping to track addresses that have claimed airdrop
     mapping(address => bool) public hasClaimedAirdrop;
     
@@ -52,6 +56,8 @@ contract GuardToken is ERC20, Ownable {
     error ZeroAddress();
     error ZeroAmount();
     error InvalidTreasuryAddress();
+    error BatchSizeTooLarge(uint256 batchSize, uint256 maxAllowed);
+    error ArraysLengthMismatch();
 
     /**
      * @notice Constructor initializes the token and mints treasury allocation
@@ -128,16 +134,25 @@ contract GuardToken is ERC20, Ownable {
      * @param recipients Array of recipient addresses
      * @param amounts Array of amounts to mint (must match recipients length)
      * @param reason Reason for the rewards
+     * @dev CRITICAL: Maximum batch size is MAX_BATCH_SIZE (100) to prevent DoS attacks
+     * @dev If you need to mint to more recipients, split into multiple batches
      */
     function batchMintRewards(
         address[] calldata recipients,
         uint256[] calldata amounts,
         string memory reason
     ) external onlyOwner {
+        // Validate array lengths match
         if (recipients.length != amounts.length) {
-            revert("Arrays length mismatch");
+            revert ArraysLengthMismatch();
         }
         
+        // CRITICAL: DoS protection - limit batch size to prevent gas limit issues
+        if (recipients.length > MAX_BATCH_SIZE) {
+            revert BatchSizeTooLarge(recipients.length, MAX_BATCH_SIZE);
+        }
+        
+        // Calculate total amount to mint (check supply limit before minting)
         uint256 totalAmount = 0;
         for (uint256 i = 0; i < amounts.length; i++) {
             totalAmount += amounts[i];
@@ -148,6 +163,7 @@ contract GuardToken is ERC20, Ownable {
             revert MaxSupplyExceeded(totalAmount, MAX_SUPPLY - currentSupply);
         }
         
+        // Mint tokens to all recipients
         for (uint256 i = 0; i < recipients.length; i++) {
             if (recipients[i] == address(0)) revert ZeroAddress();
             if (amounts[i] == 0) revert ZeroAmount();

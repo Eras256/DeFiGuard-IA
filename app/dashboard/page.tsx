@@ -39,34 +39,45 @@ export default function DashboardPage() {
     fetchTotals();
   }, []);
 
+  // Calculate statistics from real data
+  const certifiedContracts = useMemo(() => {
+    return audits.filter(audit => Number(audit.riskScore) < 40).length;
+  }, [audits]);
+
+  const averageRiskScore = useMemo(() => {
+    if (audits.length === 0) return 0;
+    const sum = audits.reduce((acc, audit) => acc + Number(audit.riskScore), 0);
+    return Math.round(sum / audits.length);
+  }, [audits]);
+
   const stats = [
     {
       icon: Database,
       label: "Total On-Chain Audits",
-      value: totalAudits.toString(),
+      value: totalAudits > 0 ? totalAudits.toString() : audits.length.toString(),
       color: "text-primary",
-      subtext: "Base Sepolia",
+      subtext: `${audits.length} active audits shown`,
     },
     {
       icon: Award,
       label: "Total NFT Badges",
       value: totalNFTs.toString(),
       color: "text-cyber-purple",
-      subtext: "GuardNFT Contract",
+      subtext: `${badges.length} badges displayed`,
     },
     {
       icon: Shield,
-      label: "Your Audits",
-      value: audits.length.toString(),
-      color: "text-cyber-pink",
-      subtext: account ? "Connected" : "Connect wallet",
+      label: "Certified Contracts",
+      value: certifiedContracts.toString(),
+      color: "text-cyber-green",
+      subtext: `Risk score < 40`,
     },
     {
       icon: TrendingUp,
-      label: "Your Badges",
-      value: badges.length.toString(),
-      color: "text-cyber-green",
-      subtext: account ? "Certified" : "Connect wallet",
+      label: "Average Risk Score",
+      value: averageRiskScore.toString(),
+      color: averageRiskScore < 40 ? "text-cyber-green" : averageRiskScore < 60 ? "text-yellow-500" : "text-red-500",
+      subtext: `From ${audits.length} audit${audits.length !== 1 ? 's' : ''}`,
     },
   ];
 

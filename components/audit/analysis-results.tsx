@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle, Shield, TrendingUp, Save, Loader2, Award, Sparkles } from "lucide-react";
+import { AlertTriangle, CheckCircle, Shield, TrendingUp, Save, Loader2, Award, Sparkles, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { getRiskScoreColor } from "@/lib/utils";
 import { useActiveAccount } from "thirdweb/react";
 import { recordAuditOnChain } from "@/lib/contracts/record-audit";
 import { toast } from "sonner";
-import { CONTRACT_ADDRESSES } from "@/lib/contracts/audit-registry";
+import { CONTRACT_ADDRESSES, SUPPORTED_CHAINS } from "@/lib/constants";
 import { GeminiBadge } from "@/components/shared/gemini-badge";
 import { checkCertificationStatus, mintBadgeForContract } from "@/lib/contracts/mint-badge";
 import { getCertificationLevelInfo, isEligibleForCertification, getNextLevel } from "@/lib/constants/certification-levels";
@@ -81,14 +81,15 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
   useEffect(() => {
     if (contractAddress && isRecorded) {
       setIsCheckingStatus(true);
-      checkCertificationStatus(contractAddress).then(status => {
+      // Pass riskScore to avoid fetching from contract (which may fail due to corrupted data)
+      checkCertificationStatus(contractAddress, analysis.riskScore).then(status => {
         setCertificationStatus(status);
         setIsCheckingStatus(false);
       }).catch(() => {
         setIsCheckingStatus(false);
       });
     }
-  }, [contractAddress, isRecorded]);
+  }, [contractAddress, isRecorded, analysis.riskScore]);
 
   const handleRecordOnChain = async () => {
     console.log("[handleRecordOnChain] Button clicked!", {
@@ -142,29 +143,55 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       console.log("[Record Audit] Success! Transaction hash:", txHash);
 
       setIsRecorded(true);
-      toast.success(`Audit recorded on-chain! Transaction: ${txHash.slice(0, 10)}...`);
+      
+      // Beautiful notification with transaction link
+      const explorerUrl = `${SUPPORTED_CHAINS.baseSepolia.explorer}/tx/${txHash}`;
+      toast.success(
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-green-400" />
+            <span className="font-semibold text-white">Audit Recorded Successfully!</span>
+          </div>
+          <p className="text-sm text-gray-300">
+            Your audit has been permanently recorded on Base Sepolia blockchain.
+          </p>
+          <a
+            href={explorerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mt-1"
+          >
+            <span className="font-mono text-xs bg-black/30 px-2 py-1 rounded">
+              {txHash.slice(0, 10)}...{txHash.slice(-8)}
+            </span>
+            <ExternalLink className="h-4 w-4" />
+            <span>View on Explorer</span>
+          </a>
+        </div>,
+        {
+          duration: 10000,
+          action: {
+            label: "View Transaction",
+            onClick: () => window.open(explorerUrl, "_blank"),
+          },
+        }
+      );
       
       // Disparar evento personalizado para actualizar estadísticas
       window.dispatchEvent(new CustomEvent('audit-recorded'));
       
-      // Esperar un poco para que la transacción se confirme antes de actualizar
+      // Wait a bit for transaction to confirm before updating
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent('audit-recorded'));
-        // Check certification status after recording
+        // Check certification status after recording - pass riskScore to avoid fetching
         if (contractAddress) {
-          checkCertificationStatus(contractAddress).then(status => {
+          checkCertificationStatus(contractAddress, analysis.riskScore).then(status => {
             setCertificationStatus(status);
           }).catch(err => {
             console.error("[Record Audit] Error checking certification status:", err);
           });
         }
       }, 3000);
-      
-      // Open transaction in explorer
-      window.open(
-        `https://sepolia.basescan.org/tx/${txHash}`,
-        "_blank"
-      );
     } catch (error: any) {
       console.error("[Record Audit] Error:", error);
       console.error("[Record Audit] Error details:", {
@@ -221,7 +248,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
 
     setIsMintingBadge(true);
     try {
-      toast.info("Solicitando certificado NFT...");
+      toast.info("Requesting NFT certificate...");
       
       const txHash = await mintBadgeForContract(
         contractAddress,
@@ -230,30 +257,81 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
         account
       );
 
-      toast.success(`¡Certificado NFT obtenido! Transacción: ${txHash.slice(0, 10)}...`);
+      // Beautiful notification with transaction hash link
+      toast.success(
+        <div className="flex flex-col gap-2 p-1">
+          <div className="flex items-center gap-2">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+              <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-green-400">NFT Badge Minted Successfully!</div>
+              <div className="text-sm text-gray-300 mt-0.5">Your certification badge has been minted on Base Sepolia</div>
+            </div>
+          </div>
+          <a
+            href={`https://sepolia.basescan.org/tx/${txHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 mt-2 px-3 py-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 transition-all group"
+          >
+            <svg className="w-4 h-4 text-blue-400 group-hover:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            <span className="text-xs font-mono text-blue-300 group-hover:text-blue-200 truncate">
+              View on Basescan: {txHash.slice(0, 8)}...{txHash.slice(-6)}
+            </span>
+            <svg className="w-3 h-3 text-blue-400 ml-auto group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>,
+        {
+          duration: 10000,
+          className: "bg-gray-900/95 border border-green-500/30 shadow-lg",
+        }
+      );
       
       // Update status after a delay to allow blockchain to update
       setTimeout(async () => {
-        const newStatus = await checkCertificationStatus(contractAddress);
+        const newStatus = await checkCertificationStatus(contractAddress, analysis.riskScore);
         setCertificationStatus(newStatus);
         
-        // Disparar evento para actualizar estadísticas
+        // Trigger event to update statistics
         window.dispatchEvent(new CustomEvent('badge-minted'));
       }, 3000);
-      
-      // Open transaction in explorer
-      window.open(
-        `https://sepolia.basescan.org/tx/${txHash}`,
-        "_blank"
-      );
     } catch (error: any) {
       console.error("Error minting badge:", error);
-        const errorMessage = error.message || "Error obtaining certificate";
+      const errorMessage = error.message || "Error obtaining certificate";
       
-      if (errorMessage.includes("owner")) {
-          toast.error("Only the GuardNFT contract owner can mint badges. Contact the DeFiGuard team.");
+      if (errorMessage.includes("NotContractOwner") || errorMessage.includes("not the owner") || errorMessage.includes("Only the owner")) {
+        toast.error(
+          <div className="flex flex-col gap-1">
+            <span className="font-semibold">Authorization Error</span>
+            <span className="text-sm">Only the owner of the audited contract can mint the certification badge. Make sure you are using the wallet that registered the audit.</span>
+          </div>,
+          { duration: 10000 }
+        );
+      } else if (errorMessage.includes("not certified") || errorMessage.includes("NotCertified")) {
+        toast.error("Contract is not certified. Please record the audit first.");
+      } else if (errorMessage.includes("already has")) {
+        toast.info("You already have the NFT certificate for this contract.");
+        // Refresh status
+        if (contractAddress) {
+          checkCertificationStatus(contractAddress, analysis.riskScore).then(status => {
+            setCertificationStatus(status);
+          });
+        }
       } else {
-        toast.error(errorMessage);
+        toast.error(
+          <div className="flex flex-col gap-1">
+            <span className="font-semibold">Error Obtaining Certificate</span>
+            <span className="text-sm">{errorMessage}</span>
+          </div>,
+          { duration: 8000 }
+        );
       }
     } finally {
       setIsMintingBadge(false);
@@ -276,7 +354,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
               Security Analysis Complete
             </span>
             <div className="flex items-center gap-3 flex-wrap">
-              <GeminiBadge model={modelUsed || undefined} variant="compact" />
+              <GeminiBadge model="GEMINI IA + MCP NULLSHOT" variant="compact" />
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold">Risk Score:</span>
                 <span className={`text-4xl font-bold ${getRiskScoreColor(analysis.riskScore)}`}>

@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { nullShotAuditorAgent } from "@/lib/agents/nullshot-auditor-agent";
 import { VulnerabilityAnalysis } from "@/lib/gemini/client";
 
-// Forzar runtime Node.js en Vercel
+// Force Node.js runtime on Vercel
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    // Verificar que la API key está configurada
+    // Verify that API key is configured
     if (!process.env.GEMINI_API_KEY) {
       console.error("[API] GEMINI_API_KEY is not set");
       return NextResponse.json(
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validar tamaño del código (límite razonable: 100KB)
+    // Validate code size (reasonable limit: 100KB)
     if (code.length > 100000) {
       return NextResponse.json(
         { success: false, error: "Contract code is too large. Maximum size is 100KB." },
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     // Analyze contract using NullShot Framework with Gemini IA + MCP
     const analysis = await nullShotAuditorAgent.analyzeContract(code, contractAddress);
 
-    // Validar estructura de respuesta
+    // Validate response structure
     if (!analysis.vulnerabilities || !Array.isArray(analysis.vulnerabilities)) {
       console.error("[API] Invalid response structure:", analysis);
       return NextResponse.json(
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`[API] ✅ Analysis complete. Model used: ${analysis.modelUsed}. Found ${analysis.vulnerabilities.length} vulnerabilities. MCP Integration: ${analysis.mcpData ? 'Enabled' : 'Disabled'}`);
 
-    // Extraer solo los datos de análisis sin modelUsed y mcpData para compatibilidad
+    // Extract only analysis data without modelUsed and mcpData for compatibility
     const { modelUsed, mcpData, ...analysisData } = analysis;
 
     return NextResponse.json({

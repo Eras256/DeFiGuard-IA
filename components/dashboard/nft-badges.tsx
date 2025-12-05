@@ -6,7 +6,7 @@ import { Award, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBadges } from "@/lib/hooks/useBadges";
 import { formatAddress } from "@/lib/utils";
-import { CONTRACT_ADDRESSES } from "@/lib/contracts/audit-registry";
+import { CONTRACT_ADDRESSES } from "@/lib/constants";
 import { SUPPORTED_CHAINS } from "@/lib/constants";
 import { getCertificationLevelInfo } from "@/lib/constants/certification-levels";
 import { CertificationBadge } from "@/components/shared/certification-badge";
@@ -20,7 +20,12 @@ export function NFTBadges() {
           <Award className="h-5 w-5 text-primary" />
           Security Certification Badges
         </CardTitle>
-        <CardDescription>NFT badges for audited contracts</CardDescription>
+        <CardDescription>
+          {badges.length > 0 
+            ? `${badges.length} NFT badge${badges.length !== 1 ? 's' : ''} minted on-chain • Real-time data`
+            : "NFT badges for audited contracts • Real-time data"
+          }
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -59,7 +64,7 @@ export function NFTBadges() {
                   
                   <div className="space-y-2 mb-3">
                     <div className="text-xs font-mono text-muted-foreground">
-                      Contract: {formatAddress(badge.contractAddress)}
+                      Contract: {badge.contractAddress ? formatAddress(badge.contractAddress) : 'N/A'}
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-400">Risk Score:</span>

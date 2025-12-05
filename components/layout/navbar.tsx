@@ -31,7 +31,7 @@ export function Navbar() {
               <Shield className="h-8 w-8 text-primary group-hover:rotate-12 transition-transform duration-300" />
               <div className="absolute inset-0 blur-xl bg-primary/50 group-hover:bg-primary/70 transition-all" />
             </div>
-            <span className="text-xl font-bold gradient-text">DeFiGuard IA</span>
+            <span className="text-xl font-bold gradient-text">DeFiGuard AI</span>
             <span className="text-xs text-gray-500 hidden sm:inline">Base Sepolia</span>
           </Link>
 

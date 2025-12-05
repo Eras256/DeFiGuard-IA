@@ -8,7 +8,7 @@ import type { Account } from "thirdweb/wallets";
 /**
  * Check if a contract is certified and eligible for NFT badge
  */
-export async function checkCertificationStatus(contractAddress: string): Promise<{
+export async function checkCertificationStatus(contractAddress: string, providedRiskScore?: number): Promise<{
   isCertified: boolean;
   hasBadge: boolean;
   riskScore: number | null;
@@ -18,15 +18,21 @@ export async function checkCertificationStatus(contractAddress: string): Promise
     // Check if certified in AuditRegistry
     const isCertified = await checkCertification(contractAddress);
 
-    // Get latest audit to check risk score
-    let riskScore: number | null = null;
-    try {
-      const latestAudit = await getLatestAudit(contractAddress);
-      if (latestAudit) {
-        riskScore = Number(latestAudit.riskScore);
+    // Get risk score - prefer provided score, otherwise try to fetch from contract
+    let riskScore: number | null = providedRiskScore !== undefined ? providedRiskScore : null;
+    
+    // Only try to fetch from contract if not provided and certified
+    if (riskScore === null && isCertified) {
+      try {
+        const latestAudit = await getLatestAudit(contractAddress);
+        if (latestAudit && latestAudit.riskScore !== undefined) {
+          riskScore = Number(latestAudit.riskScore);
+        }
+      } catch (e: any) {
+        // Silently fail - we can still proceed if isCertified is true
+        // The error is likely due to corrupted reportHash data in the contract
+        console.warn("[checkCertificationStatus] Could not fetch risk score from contract:", e?.message?.substring(0, 100) || "Unknown error");
       }
-    } catch (e) {
-      // No audit found
     }
 
     // Check if badge already exists
@@ -43,7 +49,9 @@ export async function checkCertificationStatus(contractAddress: string): Promise
       // No badge found
     }
 
-    const canMintBadge = isCertified && !hasBadge && riskScore !== null && riskScore < 40;
+    // Can mint if certified, no badge exists, and (risk score is null OR < 40)
+    // If risk score is null but certified, we allow minting (certification check is the source of truth)
+    const canMintBadge = isCertified && !hasBadge && (riskScore === null || riskScore < 40);
 
     return {
       isCertified,
@@ -64,8 +72,7 @@ export async function checkCertificationStatus(contractAddress: string): Promise
 
 /**
  * Mint NFT badge for a certified contract
- * Note: This requires the caller to be the owner of GuardNFT contract
- * For production, this should be called by a backend service or owner wallet
+ * Now users can mint directly from their wallet - no server needed!
  */
 export async function mintBadgeForContract(
   contractAddress: string,
@@ -77,10 +84,20 @@ export async function mintBadgeForContract(
     throw new Error("Wallet not connected");
   }
 
-  // Verify contract is certified
-  const status = await checkCertificationStatus(contractAddress);
+  // Validate contract address format
+  if (!contractAddress || !contractAddress.startsWith("0x") || contractAddress.length !== 42) {
+    throw new Error(`Invalid contract address format: ${contractAddress}`);
+  }
+
+  // Validate recipient address format
+  if (!recipientAddress || !recipientAddress.startsWith("0x") || recipientAddress.length !== 42) {
+    throw new Error(`Invalid recipient address format: ${recipientAddress}`);
+  }
+
+  // Verify contract is certified - pass riskScore to avoid fetching from contract
+  const status = await checkCertificationStatus(contractAddress, riskScore);
   if (!status.isCertified) {
-    throw new Error("Contract is not certified. Risk score must be < 40.");
+    throw new Error("Contract is not certified. Risk score must be < 40. Please record the audit first.");
   }
 
   if (status.hasBadge) {
@@ -91,28 +108,59 @@ export async function mintBadgeForContract(
     throw new Error("Risk score must be < 40 to mint badge.");
   }
 
+  console.log("[mintBadgeForContract] Minting badge directly from user wallet...", {
+    contractAddress,
+    recipientAddress,
+    riskScore,
+    accountAddress: account.address,
+  });
+
+  // Mint directly from user's wallet - no API needed!
   const guardNFT = getGuardNFTContract();
   
-  // Generate metadata URI (in production, this would be IPFS)
+  // Generate metadata URI
   const metadataURI = `https://defiguard.ai/badges/${contractAddress.toLowerCase()}`;
 
-  const transaction = prepareContractCall({
-    contract: guardNFT,
-    method: "mintBadge",
-    params: [
-      recipientAddress as `0x${string}`,
-      contractAddress as `0x${string}`,
-      BigInt(riskScore),
-      metadataURI,
-    ],
-  });
+  try {
+    const transaction = prepareContractCall({
+      contract: guardNFT,
+      method: "mintBadge",
+      params: [
+        recipientAddress as `0x${string}`,
+        contractAddress as `0x${string}`,
+        BigInt(riskScore),
+        metadataURI,
+      ],
+    });
 
-  const result = await sendTransaction({
-    transaction,
-    account,
-  });
+    console.log("[mintBadgeForContract] Transaction prepared, sending...");
+    const result = await sendTransaction({
+      transaction,
+      account,
+    });
 
-  const receipt = await waitForReceipt(result);
-  return receipt.transactionHash;
+    console.log("[mintBadgeForContract] Transaction sent, waiting for receipt...", result.transactionHash);
+    const receipt = await waitForReceipt(result);
+    
+    console.log("[mintBadgeForContract] Badge minted successfully!", receipt.transactionHash);
+    return receipt.transactionHash;
+  } catch (error: any) {
+    console.error("[mintBadgeForContract] Error minting badge:", error);
+    
+    // Provide helpful error messages
+    if (error.message?.includes("NotContractOwner") || error.message?.includes("not the owner")) {
+      throw new Error("Only the owner of the audited contract can mint the certification badge. Make sure you are using the wallet that registered the audit.");
+    }
+    
+    if (error.message?.includes("NotCertified") || error.message?.includes("not certified")) {
+      throw new Error("Contract is not certified. Please record the audit first with a risk score < 40.");
+    }
+    
+    if (error.message?.includes("BadgeAlreadyExists") || error.message?.includes("already exists")) {
+      throw new Error("This contract already has a certification badge.");
+    }
+    
+    throw error;
+  }
 }
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getContract, prepareContractCall } from "thirdweb";
 import { baseSepolia } from "thirdweb/chains";
 import { createThirdwebClient } from "thirdweb";
-import { CONTRACT_ADDRESSES } from "@/lib/contracts/audit-registry";
+import { CONTRACT_ADDRESSES } from "@/lib/constants";
 
 const client = createThirdwebClient({
   clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "",

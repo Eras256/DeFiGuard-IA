@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { Chatbot } from "@/components/chatbot/chatbot";
 import { NeuralBackground } from "@/components/layout/neural-background";
 import { LiveStatsBar } from "@/components/shared/live-stats-bar";
 import { BlockchainStatus } from "@/components/shared/blockchain-status";
@@ -14,7 +15,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "DeFiGuard AI | AI-Powered Smart Contract Security Auditor",
-  description: "Secure your smart contracts with AI-powered audits using GEMINI IA + MCP NullShot Architecture powered by AI SDK. Integrated MCP servers provide comprehensive security insights. Multi-chain support, instant results, and actionable fixes.",
+  description: "Secure your smart contracts with AI-powered audits using GEMINI IA + MCP NullShot Architecture powered by AI SDK. Integrated MCP servers provide comprehensive security insights. EVM-compatible contract analysis with on-chain registration on Base Sepolia.",
   keywords: "smart contract, security audit, AI, Gemini, NullShot, MCP, AI SDK, blockchain, DeFi, Web3, Solidity",
   authors: [{ name: "DeFiGuard AI Team" }],
   openGraph: {
@@ -42,6 +43,7 @@ export default function RootLayout({
           <main className="min-h-screen pt-16">{children}</main>
           <Footer />
           <LiveStatsBar />
+          <Chatbot />
           <Toaster position="bottom-right" theme="dark" />
         </Providers>
       </body>

@@ -1,8 +1,10 @@
-// Contract addresses deployed on Base Sepolia
+// Contract addresses deployed on Base Sepolia (Updated - December 2025)
+// UPDATED: AuditRegistry now includes contractOwner mapping
+// UPDATED: GuardNFT now allows contract owners to mint badges directly
 export const CONTRACT_ADDRESSES = {
-  AUDIT_REGISTRY: process.env.NEXT_PUBLIC_AUDIT_REGISTRY_ADDRESS || "0x9641E3A58aBe4c3a7320c3d176Da265A3a523F08",
-  GUARD_NFT: process.env.NEXT_PUBLIC_GUARD_NFT_ADDRESS || "0xc838c5486eD3Cc6EFA08Ac12747a4270Cc19405b",
-  GUARD_TOKEN: process.env.NEXT_PUBLIC_GUARD_TOKEN_ADDRESS || "0x3d9f4d386b2a2C2bCdDC141aFD4593fCc9363440",
+  AUDIT_REGISTRY: process.env.NEXT_PUBLIC_AUDIT_REGISTRY_ADDRESS || "0x6D3d5487c41E1759b5457f5C29f8d41caC51a8eF",
+  GUARD_NFT: process.env.NEXT_PUBLIC_GUARD_NFT_ADDRESS || "0xE429b1AFD7BDd12ceDB69777538f5925CB6CeF52",
+  GUARD_TOKEN: process.env.NEXT_PUBLIC_GUARD_TOKEN_ADDRESS || "0xBc3035ed036B280AdB9A6Ad19a46089E39e2eDED",
 } as const;
 
 export const SUPPORTED_CHAINS = {

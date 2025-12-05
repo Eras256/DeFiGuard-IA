@@ -3,16 +3,18 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Shield, Zap, Lock, ArrowRight } from "lucide-react";
+import { Shield, Zap, Lock, Award, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GeminiBadge } from "@/components/shared/gemini-badge";
 
 interface HeroProps {
   totalAudits: number;
+  totalNFTs: number;
+  certifiedContracts: number;
   loading?: boolean;
 }
 
-export function Hero({ totalAudits, loading = false }: HeroProps) {
+export function Hero({ totalAudits, totalNFTs, certifiedContracts, loading = false }: HeroProps) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 px-4 py-20">
       {/* Animated gradient orbs */}
@@ -59,10 +61,10 @@ export function Hero({ totalAudits, loading = false }: HeroProps) {
 
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            DeFiGuard IA analyzes Solidity contracts in 30 seconds using{" "}
+            DeFiGuard IA analyzes Solidity contracts from any EVM-compatible chain in 30 seconds using{" "}
             <span className="text-primary font-semibold">GEMINI IA</span> +{" "}
             <span className="text-primary font-semibold">MCP NullShot Architecture</span>,
-            detecting vulnerabilities before deployment.
+            detecting vulnerabilities before deployment. Audit registration and NFT badges are stored on-chain on Base Sepolia testnet.
           </p>
 
           {/* CTA Buttons */}
@@ -81,7 +83,7 @@ export function Hero({ totalAudits, loading = false }: HeroProps) {
           </div>
 
           {/* Real-time Stats from Blockchain */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -92,7 +94,22 @@ export function Hero({ totalAudits, loading = false }: HeroProps) {
               <div className="text-4xl font-bold text-white mb-2">
                 {loading ? "..." : totalAudits.toLocaleString()}
               </div>
-              <div className="text-gray-400">Audits on Base Sepolia</div>
+              <div className="text-gray-400">On-Chain Audits</div>
+              <div className="text-xs text-gray-500 mt-1">Base Sepolia</div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="glass rounded-lg p-6"
+            >
+              <Award className="h-12 w-12 text-cyber-purple mx-auto mb-4" />
+              <div className="text-4xl font-bold text-white mb-2">
+                {loading ? "..." : totalNFTs.toLocaleString()}
+              </div>
+              <div className="text-gray-400">NFT Badges Minted</div>
+              <div className="text-xs text-gray-500 mt-1">Certifications</div>
             </motion.div>
 
             <motion.div
@@ -101,21 +118,33 @@ export function Hero({ totalAudits, loading = false }: HeroProps) {
               transition={{ delay: 0.4 }}
               className="glass rounded-lg p-6"
             >
-              <Zap className="h-12 w-12 text-cyber-purple mx-auto mb-4" />
-              <div className="text-4xl font-bold text-white mb-2">30s</div>
-              <div className="text-gray-400">Average Analysis Time</div>
+              <Zap className="h-12 w-12 text-cyber-green mx-auto mb-4" />
+              <div className="text-4xl font-bold text-white mb-2">
+                {loading ? "..." : certifiedContracts.toLocaleString()}
+              </div>
+              <div className="text-gray-400">Certified Contracts</div>
+              <div className="text-xs text-gray-500 mt-1">Risk score &lt; 40</div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
+              transition={{ delay: 0.5 }}
               className="glass rounded-lg p-6"
             >
               <Lock className="h-12 w-12 text-cyber-pink mx-auto mb-4" />
-              <div className="text-4xl font-bold text-white mb-2">100%</div>
-              <div className="text-gray-400">On-Chain Verified</div>
+              <div className="text-4xl font-bold text-white mb-2">30s</div>
+              <div className="text-gray-400">Average Time</div>
+              <div className="text-xs text-gray-500 mt-1">Complete analysis</div>
             </motion.div>
+          </div>
+
+          {/* Live Data Indicator */}
+          <div className="mt-8 inline-flex items-center gap-2 glass rounded-full px-4 py-2">
+            <div className="h-2 w-2 rounded-full bg-cyber-green animate-pulse"></div>
+            <span className="text-sm text-gray-400">
+              Live data from Base Sepolia • 100% on-chain • No mock data
+            </span>
           </div>
         </motion.div>
       </div>

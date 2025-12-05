@@ -23,13 +23,14 @@ async function main() {
   const auditRegistryAddress = await auditRegistry.getAddress();
   console.log("✅ AuditRegistry deployed to:", auditRegistryAddress);
 
-  // Deploy GuardNFT
+  // Deploy GuardNFT (requires AuditRegistry address in constructor)
   console.log("\n🎨 Deploying GuardNFT...");
   const GuardNFT = await ethers.getContractFactory("GuardNFT");
-  const guardNFT = await GuardNFT.deploy(deployer.address);
+  const guardNFT = await GuardNFT.deploy(deployer.address, auditRegistryAddress);
   await guardNFT.waitForDeployment();
   const guardNFTAddress = await guardNFT.getAddress();
   console.log("✅ GuardNFT deployed to:", guardNFTAddress);
+  console.log("   Linked to AuditRegistry:", auditRegistryAddress);
 
   // Deploy GuardToken
   console.log("\n🪙 Deploying GuardToken...");

@@ -31,8 +31,8 @@ export function CTA() {
             </h2>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Join hundreds of developers using AI-powered security audits powered by GEMINI IA + MCP NullShot Architecture. Start protecting
-              your smart contracts today with DeFiGuard AI.
+              Analyze contracts from any EVM-compatible chain using AI-powered security audits with GEMINI IA + MCP NullShot Architecture. 
+              Register audits and earn NFT badges on Base Sepolia testnet. Start protecting your smart contracts today.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -42,15 +42,15 @@ export function CTA() {
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link href="https://discord.gg/nullshot" target="_blank">
+              <Link href="/dashboard">
                 <Button size="xl" variant="glass">
-                  Join Discord Community
+                  View Dashboard
                 </Button>
               </Link>
             </div>
 
             <p className="text-sm text-muted-foreground mt-6">
-              No credit card required • Free tier available • Enterprise plans coming soon
+              Free to use • EVM-compatible contract analysis • On-chain registration on Base Sepolia testnet
             </p>
           </div>
         </motion.div>

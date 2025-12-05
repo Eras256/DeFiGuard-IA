@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, CheckCircle2 } from "lucide-react";
 
 /**
- * Componente estático que muestra el estado de Gemini AI
- * Sin verificaciones ni consumo de tokens - solo visual
+ * Static component that displays Gemini AI status
+ * No checks or token consumption - visual only
  */
 export function GeminiStatus() {
   return (

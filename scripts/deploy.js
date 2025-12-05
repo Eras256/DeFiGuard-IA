@@ -1,10 +1,48 @@
 const { ethers } = require("hardhat");
-require("dotenv").config({ path: ".env.local" });
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env.local") });
 
 async function main() {
   console.log("🚀 Starting deployment...\n");
+  console.log("🔍 Checking environment...");
+  console.log("DEPLOYER_PRIVATE_KEY exists:", !!process.env.DEPLOYER_PRIVATE_KEY);
+  console.log("DEPLOYER_PRIVATE_KEY length:", process.env.DEPLOYER_PRIVATE_KEY?.length || 0);
 
-  const [deployer] = await ethers.getSigners();
+  // Get provider
+  const provider = ethers.provider;
+  
+  // Get deployer account
+  let deployer;
+  if (process.env.DEPLOYER_PRIVATE_KEY) {
+    try {
+      // Ensure private key has 0x prefix
+      let privateKey = process.env.DEPLOYER_PRIVATE_KEY.trim();
+      if (!privateKey.startsWith("0x")) {
+        privateKey = "0x" + privateKey;
+      }
+      deployer = new ethers.Wallet(privateKey, provider);
+      console.log("📝 Using deployer from DEPLOYER_PRIVATE_KEY");
+    } catch (error) {
+      console.error("❌ ERROR creating wallet from DEPLOYER_PRIVATE_KEY:", error.message);
+      process.exit(1);
+    }
+  } else {
+    // Use default signer from Hardhat
+    try {
+      const signers = await ethers.getSigners();
+      if (signers.length === 0) {
+        console.error("❌ ERROR: No signers available. Please configure DEPLOYER_PRIVATE_KEY in .env.local");
+        process.exit(1);
+      }
+      deployer = signers[0];
+      console.log("📝 Using default Hardhat signer");
+    } catch (error) {
+      console.error("❌ ERROR getting signers:", error.message);
+      console.error("Please ensure DEPLOYER_PRIVATE_KEY is set in .env.local");
+      process.exit(1);
+    }
+  }
+  
   console.log("📝 Deploying contracts with account:", deployer.address);
   
   const balance = await ethers.provider.getBalance(deployer.address);
@@ -24,13 +62,14 @@ async function main() {
   const auditRegistryAddress = await auditRegistry.getAddress();
   console.log("✅ AuditRegistry deployed to:", auditRegistryAddress);
 
-  // Deploy GuardNFT
+  // Deploy GuardNFT (requires AuditRegistry address in constructor)
   console.log("\n🎨 Deploying GuardNFT...");
   const GuardNFT = await ethers.getContractFactory("GuardNFT");
-  const guardNFT = await GuardNFT.deploy(deployer.address);
+  const guardNFT = await GuardNFT.deploy(deployer.address, auditRegistryAddress);
   await guardNFT.waitForDeployment();
   const guardNFTAddress = await guardNFT.getAddress();
   console.log("✅ GuardNFT deployed to:", guardNFTAddress);
+  console.log("   Linked to AuditRegistry:", auditRegistryAddress);
 
   // Deploy GuardToken
   console.log("\n🪙 Deploying GuardToken...");

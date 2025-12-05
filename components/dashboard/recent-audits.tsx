@@ -12,15 +12,16 @@ export function RecentAudits() {
 
   const recentAudits = useMemo(() => {
     return audits
+      .filter(audit => audit && audit.contractAddress) // Filter out invalid audits
       .slice()
       .sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
       .slice(0, 10)
       .map((audit, index) => ({
-        id: `${audit.contractAddress}-${index}`,
-        contractAddress: audit.contractAddress,
-        riskScore: Number(audit.riskScore),
-        timestamp: audit.timestamp,
-        auditor: audit.auditor,
+        id: `${audit.contractAddress || 'unknown'}-${index}`,
+        contractAddress: audit.contractAddress || '0x0000000000000000000000000000000000000000',
+        riskScore: Number(audit.riskScore || 0),
+        timestamp: audit.timestamp || 0n,
+        auditor: audit.auditor || '0x0000000000000000000000000000000000000000',
       }));
   }, [audits]);
 
@@ -31,7 +32,9 @@ export function RecentAudits() {
           <Shield className="h-5 w-5 text-primary" />
           Recent Security Audits
         </CardTitle>
-        <CardDescription>Latest audits from Base Sepolia blockchain</CardDescription>
+        <CardDescription>
+          Latest {recentAudits.length} audit{recentAudits.length !== 1 ? 's' : ''} from Base Sepolia blockchain • Real-time data
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {loading ? (
@@ -57,7 +60,7 @@ export function RecentAudits() {
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-mono text-sm">
-                    {formatAddress(audit.contractAddress)}
+                    {audit.contractAddress ? formatAddress(audit.contractAddress) : 'N/A'}
                   </div>
                   <Badge
                     variant={
@@ -74,7 +77,7 @@ export function RecentAudits() {
                     <Calendar className="h-3 w-3" />
                     {formatTimestamp(audit.timestamp)}
                   </div>
-                  {audit.auditor && (
+                  {audit.auditor && audit.auditor !== '0x0000000000000000000000000000000000000000' && (
                     <div className="font-mono text-xs">
                       {formatAddress(audit.auditor)}
                     </div>

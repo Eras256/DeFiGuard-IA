@@ -5,7 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatAddress(address: string): string {
+export function formatAddress(address: string | undefined | null): string {
+  if (!address || typeof address !== 'string') {
+    return '0x0000...0000';
+  }
+  if (address.length < 10) {
+    return address;
+  }
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
