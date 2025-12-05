@@ -26,15 +26,15 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
     setCode(SAMPLE_VULNERABLE_CONTRACT);
     // Generate a unique demo contract address for testing purposes
     // This allows users to record audits and mint NFTs multiple times for demo
-    // Format: 0x + 40 hex characters (demo addresses start with 0xd3m0 for easy identification)
+    // Format: 0x + 40 hex characters (demo addresses start with 0xd3a0 for easy identification)
     // Using timestamp + random to ensure uniqueness for each demo
-    const timestamp = Date.now().toString(16).slice(-8); // 8 hex chars
+    const timestamp = Date.now().toString(16).slice(-8).padStart(8, '0'); // 8 hex chars, padded
     const random = Array.from({ length: 32 }, () => 
       Math.floor(Math.random() * 16).toString(16)
     ).join('');
-    // 0x (2) + d3m0 (4) + timestamp (8) + random (28) = 42 characters total
-    // d3m0 is hex-valid and easy to identify as demo addresses
-    const demoAddress = `0xd3m0${timestamp}${random}`.slice(0, 42);
+    // 0x (2) + d3a0 (4) + timestamp (8) + random (28) = 42 characters total
+    // d3a0 is hex-valid and easy to identify as demo addresses (d3a0 = demo in hex-like)
+    const demoAddress = `0xd3a0${timestamp}${random}`.slice(0, 42);
     setContractAddress(demoAddress);
   };
 
@@ -56,7 +56,7 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
       <CardContent className="space-y-4">
         <div>
           <label className="text-sm font-medium mb-2 block">
-            Contract Address {contractAddress.startsWith('0xd3m0') && (
+            Contract Address {contractAddress.startsWith('0xd3a0') && (
               <span className="text-primary text-xs">(Demo Address)</span>
             )}
           </label>
@@ -69,7 +69,7 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
             disabled={isAnalyzing}
           />
           <p className="text-xs text-muted-foreground mt-1">
-            {contractAddress.startsWith('0xd3m0') 
+            {contractAddress.startsWith('0xd3a0') 
               ? "Demo address generated. You can record audits and mint NFTs multiple times for testing."
               : "If provided, audit can be recorded on-chain after analysis"}
           </p>
