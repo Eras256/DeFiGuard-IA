@@ -105,24 +105,69 @@ export async function mintBadgeForContract(
     throw new Error(`Invalid recipient address format: ${recipientAddress}`);
   }
 
+  // For demo addresses, allow multiple mints by generating unique contract address each time
+  const isDemoAddress = contractAddress.startsWith('0xd3a0');
+  let finalContractAddress = contractAddress;
+  let finalRiskScore = riskScore;
+  
+  if (isDemoAddress) {
+    // Cap risk score at 20 for demo
+    finalRiskScore = Math.min(riskScore, 20);
+    
+    // For demo, always generate a new unique address for each mint to allow unlimited mints
+    // This ensures each mint gets its own badge without conflicts
+    const walletHash = account.address.slice(2, 10); // First 8 chars of wallet (without 0x)
+    const timestamp = Date.now().toString(16).slice(-6).padStart(6, '0');
+    const random = Array.from({ length: 28 }, () => 
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('');
+    // 0x (2) + d3a0 (4) + walletHash (8) + timestamp (6) + random (22) = 42 chars
+    finalContractAddress = `0xd3a0${walletHash}${timestamp}${random}`.slice(0, 42);
+    
+    console.log("[mintBadgeForContract] Demo: Generating new address and recording audit:", finalContractAddress);
+    
+    // First record audit for the new address automatically
+    const reportData = JSON.stringify({
+      riskScore: finalRiskScore,
+      vulnerabilities: 0,
+      timestamp: Date.now(),
+      summary: "Demo contract - automatically certified for NFT mint",
+    });
+    const reportHash = btoa(reportData).slice(0, 46);
+    
+    // Import recordAuditOnChain here to avoid circular dependency
+    const { recordAuditOnChain } = await import('./record-audit');
+    try {
+      await recordAuditOnChain(finalContractAddress, finalRiskScore, reportHash, account);
+      // Wait a bit for the transaction to confirm
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    } catch (error: any) {
+      console.error("[mintBadgeForContract] Error recording audit for new demo address:", error);
+      throw new Error("Failed to prepare demo contract for minting. Please try again.");
+    }
+  }
+
   // Verify contract is certified - pass riskScore to avoid fetching from contract
-  const status = await checkCertificationStatus(contractAddress, riskScore);
+  const status = await checkCertificationStatus(finalContractAddress, finalRiskScore);
   if (!status.isCertified) {
     throw new Error("Contract is not certified. Risk score must be < 40. Please record the audit first.");
   }
 
-  if (status.hasBadge) {
+  if (status.hasBadge && !isDemoAddress) {
     throw new Error("Contract already has a badge.");
   }
 
-  if (riskScore >= 40) {
+  if (finalRiskScore >= 40) {
     throw new Error("Risk score must be < 40 to mint badge.");
   }
 
   console.log("[mintBadgeForContract] Minting badge directly from user wallet...", {
-    contractAddress,
+    originalContractAddress: contractAddress,
+    finalContractAddress,
     recipientAddress,
-    riskScore,
+    originalRiskScore: riskScore,
+    finalRiskScore,
+    isDemoAddress,
     accountAddress: account.address,
   });
 
@@ -130,7 +175,7 @@ export async function mintBadgeForContract(
   const guardNFT = getGuardNFTContract();
   
   // Generate metadata URI
-  const metadataURI = `https://defiguard.ai/badges/${contractAddress.toLowerCase()}`;
+  const metadataURI = `https://defiguard.ai/badges/${finalContractAddress.toLowerCase()}`;
 
   try {
     const transaction = prepareContractCall({
@@ -138,8 +183,8 @@ export async function mintBadgeForContract(
       method: "mintBadge",
       params: [
         recipientAddress as `0x${string}`,
-        contractAddress as `0x${string}`,
-        BigInt(riskScore),
+        finalContractAddress as `0x${string}`,
+        BigInt(finalRiskScore),
         metadataURI,
       ],
     });

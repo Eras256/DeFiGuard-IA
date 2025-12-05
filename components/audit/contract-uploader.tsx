@@ -108,7 +108,7 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
             variant="outline"
             size="lg"
           >
-            Load Sample (Vulnerable)
+            Load Sample (Demo)
           </Button>
         </div>
         <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">

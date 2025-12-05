@@ -62,25 +62,49 @@ export const FAMOUS_EXPLOITS = [
 export const SAMPLE_VULNERABLE_CONTRACT = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract VulnerableBank {
-    mapping(address => uint256) public balances;
+/**
+ * @title SecureToken
+ * @notice Demo contract with good security practices for testing
+ * @dev This contract follows security best practices and should have a low risk score
+ */
+contract SecureToken {
+    mapping(address => uint256) private balances;
+    address public owner;
+    uint256 public totalSupply;
     
-    function deposit() public payable {
-        balances[msg.sender] += msg.value;
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Mint(address indexed to, uint256 value);
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this");
+        _;
     }
     
-    // VULNERABLE: Reentrancy attack possible
-    function withdraw(uint256 amount) public {
+    constructor() {
+        owner = msg.sender;
+        totalSupply = 0;
+    }
+    
+    function mint(address to, uint256 amount) external onlyOwner {
+        require(to != address(0), "Cannot mint to zero address");
+        balances[to] += amount;
+        totalSupply += amount;
+        emit Mint(to, amount);
+        emit Transfer(address(0), to, amount);
+    }
+    
+    function transfer(address to, uint256 amount) external {
+        require(to != address(0), "Cannot transfer to zero address");
         require(balances[msg.sender] >= amount, "Insufficient balance");
         
-        (bool success, ) = msg.sender.call{value: amount}("");
-        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
         
-        balances[msg.sender] -= amount; // State update AFTER external call!
+        emit Transfer(msg.sender, to, amount);
     }
     
-    function getBalance() public view returns (uint256) {
-        return balances[msg.sender];
+    function balanceOf(address account) external view returns (uint256) {
+        return balances[account];
     }
 }`;
 

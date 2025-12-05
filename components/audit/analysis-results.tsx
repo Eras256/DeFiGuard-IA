@@ -28,6 +28,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
   const account = useActiveAccount();
   const [isRecording, setIsRecording] = useState(false);
   const [isRecorded, setIsRecorded] = useState(false);
+  const [finalContractAddress, setFinalContractAddress] = useState<string | undefined>(contractAddress);
   const [certificationStatus, setCertificationStatus] = useState<{
     isCertified: boolean;
     hasBadge: boolean;
@@ -39,6 +40,11 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
   const recordButtonRef = useRef<HTMLButtonElement>(null);
   const criticalCount = analysis.vulnerabilities.filter(v => v.severity === "Critical").length;
   const highCount = analysis.vulnerabilities.filter(v => v.severity === "High").length;
+  
+  // Update finalContractAddress when contractAddress prop changes
+  useEffect(() => {
+    setFinalContractAddress(contractAddress);
+  }, [contractAddress]);
 
   // Agregar listener directo al botón usando useRef
   useEffect(() => {
@@ -80,13 +86,16 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
   // Check certification status when contract address is available
   // Only check after a delay to ensure blockchain state is updated
   useEffect(() => {
-    if (contractAddress && isRecorded) {
+    const addressToCheck = finalContractAddress || contractAddress;
+    if (addressToCheck && isRecorded) {
       setIsCheckingStatus(true);
       // Wait a bit before checking to ensure blockchain state is updated
       const timeoutId = setTimeout(() => {
         console.log("[useEffect] Checking certification status...");
+        const isDemoAddress = addressToCheck.startsWith('0xd3a0');
+        const finalRiskScore = isDemoAddress ? Math.min(analysis.riskScore, 20) : analysis.riskScore;
         // Pass riskScore to avoid fetching from contract (which may fail due to corrupted data)
-        checkCertificationStatus(contractAddress, analysis.riskScore).then(status => {
+        checkCertificationStatus(addressToCheck, finalRiskScore).then(status => {
           console.log("[useEffect] Certification status result:", {
             isCertified: status.isCertified,
             hasBadge: status.hasBadge,
@@ -104,7 +113,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       
       return () => clearTimeout(timeoutId);
     }
-  }, [contractAddress, isRecorded, analysis.riskScore]);
+  }, [finalContractAddress, contractAddress, isRecorded, analysis.riskScore]);
 
   const handleRecordOnChain = async () => {
     console.log("[handleRecordOnChain] Button clicked!", {
@@ -135,25 +144,59 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
         account: account.address,
       });
 
+      // For demo addresses, generate unique address per wallet to allow multiple records/mints
+      const isDemoAddress = contractAddress.startsWith('0xd3a0');
+      let finalContractAddress = contractAddress;
+      const finalRiskScore = isDemoAddress ? Math.min(analysis.riskScore, 20) : analysis.riskScore;
+      
+      if (isDemoAddress) {
+        // Generate unique demo address that includes wallet address for uniqueness
+        // This allows each wallet to have its own demo contract for unlimited records/mints
+        const walletHash = account.address.slice(2, 10); // First 8 chars of wallet (without 0x)
+        const timestamp = Date.now().toString(16).slice(-6).padStart(6, '0');
+        const random = Array.from({ length: 28 }, () => 
+          Math.floor(Math.random() * 16).toString(16)
+        ).join('');
+        // 0x (2) + d3a0 (4) + walletHash (8) + timestamp (6) + random (22) = 42 chars
+        finalContractAddress = `0xd3a0${walletHash}${timestamp}${random}`.slice(0, 42);
+        
+        if (analysis.riskScore > 20) {
+          toast.info("Demo mode: Risk score capped at 20 for certification eligibility");
+        }
+        toast.info("Demo mode: Using unique address for unlimited records and mints");
+      }
+
       // Generate a simple hash from the contract code and analysis
       const reportData = JSON.stringify({
-        riskScore: analysis.riskScore,
+        riskScore: finalRiskScore,
         vulnerabilities: analysis.vulnerabilities.length,
         timestamp: Date.now(),
         summary: analysis.summary,
       });
       const reportHash = btoa(reportData).slice(0, 46); // IPFS-like hash format
 
-      console.log("[Record Audit] Calling recordAuditOnChain...");
+      console.log("[Record Audit] Calling recordAuditOnChain...", {
+        isDemoAddress,
+        originalContractAddress: contractAddress,
+        finalContractAddress,
+        originalRiskScore: analysis.riskScore,
+        finalRiskScore,
+      });
       
       toast.info("Preparing transaction... Please approve in your wallet.");
       
       const txHash = await recordAuditOnChain(
-        contractAddress,
-        analysis.riskScore,
+        finalContractAddress,
+        finalRiskScore,
         reportHash,
         account
       );
+      
+      // For demo addresses, update the final address for status checking
+      if (isDemoAddress && finalContractAddress !== contractAddress) {
+        console.log("[Record Audit] Demo: Using new address for status check:", finalContractAddress);
+        setFinalContractAddress(finalContractAddress);
+      }
 
       console.log("[Record Audit] Success! Transaction hash:", txHash);
 
@@ -202,7 +245,17 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
         // Check certification status after recording - pass riskScore to avoid fetching
         if (contractAddress) {
           console.log("[Record Audit] Checking certification status after delay...");
-          checkCertificationStatus(contractAddress, analysis.riskScore).then(status => {
+          // Use final risk score for demo addresses
+          const addressToCheck = finalContractAddress || contractAddress;
+          const isDemoAddress = addressToCheck?.startsWith('0xd3a0');
+          const finalRiskScore = isDemoAddress ? Math.min(analysis.riskScore, 20) : analysis.riskScore;
+          
+          if (!addressToCheck) {
+            console.error("[Record Audit] No contract address to check");
+            return;
+          }
+          
+          checkCertificationStatus(addressToCheck, finalRiskScore).then(status => {
             console.log("[Record Audit] Certification status:", {
               isCertified: status.isCertified,
               hasBadge: status.hasBadge,
@@ -256,7 +309,8 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
   };
 
   const handleMintBadge = async () => {
-    if (!account || !contractAddress || !certificationStatus) {
+    const addressToUse = finalContractAddress || contractAddress;
+    if (!account || !addressToUse || !certificationStatus) {
       toast.error("Please connect your wallet first");
       return;
     }
@@ -266,7 +320,9 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       return;
     }
 
-    if (certificationStatus.hasBadge) {
+    // For demo addresses, allow minting even if badge exists (will generate new address)
+    const isDemoAddress = addressToUse.startsWith('0xd3a0');
+    if (certificationStatus.hasBadge && !isDemoAddress) {
       toast.info("You already have the NFT certificate for this contract");
       return;
     }
@@ -276,7 +332,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       toast.info("Requesting NFT certificate...");
       
       const txHash = await mintBadgeForContract(
-        contractAddress,
+        addressToUse,
         account.address,
         analysis.riskScore,
         account
@@ -321,8 +377,14 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       
       // Update status after a delay to allow blockchain to update
       setTimeout(async () => {
-        const newStatus = await checkCertificationStatus(contractAddress, analysis.riskScore);
-        setCertificationStatus(newStatus);
+        const addressToCheck = finalContractAddress || contractAddress;
+        const isDemoAddress = addressToCheck?.startsWith('0xd3a0');
+        const finalRiskScore = isDemoAddress ? Math.min(analysis.riskScore, 20) : analysis.riskScore;
+        
+        if (addressToCheck) {
+          const newStatus = await checkCertificationStatus(addressToCheck, finalRiskScore);
+          setCertificationStatus(newStatus);
+        }
         
         // Trigger event to update statistics
         window.dispatchEvent(new CustomEvent('badge-minted'));
@@ -342,10 +404,16 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       } else if (errorMessage.includes("not certified") || errorMessage.includes("NotCertified")) {
         toast.error("Contract is not certified. Please record the audit first.");
       } else if (errorMessage.includes("already has")) {
-        toast.info("You already have the NFT certificate for this contract.");
+        // For demo addresses, this shouldn't happen as we generate new addresses
+        const addressToCheck = finalContractAddress || contractAddress;
+        const isDemoAddress = addressToCheck?.startsWith('0xd3a0');
+        if (!isDemoAddress) {
+          toast.info("You already have the NFT certificate for this contract.");
+        }
         // Refresh status
-        if (contractAddress) {
-          checkCertificationStatus(contractAddress, analysis.riskScore).then(status => {
+        if (addressToCheck) {
+          const finalRiskScore = isDemoAddress ? Math.min(analysis.riskScore, 20) : analysis.riskScore;
+          checkCertificationStatus(addressToCheck, finalRiskScore).then(status => {
             setCertificationStatus(status);
           });
         }
@@ -480,7 +548,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
             </div>
           )}
 
-          {contractAddress && (
+          {(finalContractAddress || contractAddress) && (
             <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
               {isRecorded ? (
                 <>
@@ -532,32 +600,45 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                                 {levelInfo.description}
                               </p>
                           
-                              {certificationStatus.hasBadge ? (
-                                <div className="flex items-center gap-2 text-sm text-primary bg-primary/10 p-3 rounded-lg">
-                                  <Sparkles className="h-5 w-5" />
-                                  <span className="font-semibold">You already have the {levelInfo.icon} NFT Badge certified!</span>
-                                </div>
-                              ) : (
-                                <Button
-                                  onClick={handleMintBadge}
-                                  disabled={isMintingBadge || !account}
-                                  variant="glow"
-                                  size="lg"
-                                  className="w-full mt-2"
-                                >
-                                  {isMintingBadge ? (
-                                    <>
-                                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                                      Obtaining {levelInfo.icon} NFT Certificate...
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Award className="h-5 w-5 mr-2" />
-                                      Get {levelInfo.icon} NFT Certificate - {levelInfo.name}
-                                    </>
-                                  )}
-                                </Button>
-                              )}
+                              {(() => {
+                                const addressToUse = finalContractAddress || contractAddress;
+                                const isDemoAddress = addressToUse?.startsWith('0xd3a0');
+                                // For demo addresses, always show mint button (will generate new address)
+                                const showMintButton = !certificationStatus.hasBadge || isDemoAddress;
+                                
+                                if (!showMintButton) {
+                                  return (
+                                    <div className="flex items-center gap-2 text-sm text-primary bg-primary/10 p-3 rounded-lg">
+                                      <Sparkles className="h-5 w-5" />
+                                      <span className="font-semibold">You already have the {levelInfo.icon} NFT Badge certified!</span>
+                                    </div>
+                                  );
+                                }
+                                
+                                return (
+                                  <Button
+                                    onClick={handleMintBadge}
+                                    disabled={isMintingBadge || !account}
+                                    variant="glow"
+                                    size="lg"
+                                    className="w-full mt-2"
+                                  >
+                                    {isMintingBadge ? (
+                                      <>
+                                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                                        Obtaining {levelInfo.icon} NFT Certificate...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Award className="h-5 w-5 mr-2" />
+                                        {isDemoAddress && certificationStatus.hasBadge 
+                                          ? `Get Another ${levelInfo.icon} NFT Certificate - ${levelInfo.name} (Demo)`
+                                          : `Get ${levelInfo.icon} NFT Certificate - ${levelInfo.name}`}
+                                      </>
+                                    )}
+                                  </Button>
+                                );
+                              })()}
                               
                               {!account && (
                                 <p className="text-xs text-yellow-400 text-center mt-2">
@@ -630,7 +711,8 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                       e.stopPropagation();
                       
                       // Verificar que no esté deshabilitado
-                      if (isRecording || !account || !contractAddress) {
+                      const addressToUse = finalContractAddress || contractAddress;
+                      if (isRecording || !account || !addressToUse) {
                         console.warn("⚠️ Button click ignored - button is disabled");
                         toast.error("Please ensure wallet is connected and contract address is provided");
                         return;
@@ -648,7 +730,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                     onMouseUp={(e) => {
                       console.log("🟠 [Native Button onMouseUp] FIRED!", e);
                     }}
-                    disabled={isRecording || !account || !contractAddress}
+                    disabled={isRecording || !account || !(finalContractAddress || contractAddress)}
                     className={`w-full h-11 rounded-md px-8 text-base font-medium transition-all flex items-center justify-center gap-2 relative z-50 ${
                       isEligibleForCertification(analysis.riskScore)
                         ? "bg-gradient-to-r from-cyber-blue to-cyber-purple text-white hover:shadow-2xl hover:shadow-primary/50 animate-glow"
@@ -658,7 +740,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                     style={{ 
                       position: 'relative',
                       zIndex: 9999,
-                      pointerEvents: (isRecording || !account || !contractAddress) ? 'none' : 'auto',
+                      pointerEvents: (isRecording || !account || !(finalContractAddress || contractAddress)) ? 'none' : 'auto',
                     }}
                   >
                     {isRecording ? (
@@ -683,7 +765,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                       Connect your wallet to record this audit on blockchain
                     </p>
                   )}
-                  {!contractAddress && (
+                  {!(finalContractAddress || contractAddress) && (
                     <p className="text-xs text-yellow-400 mt-2 text-center">
                       ⚠️ Contract address is required. Please enter the contract address in the upload form above.
                     </p>
@@ -700,7 +782,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
             </div>
           )}
 
-          {!contractAddress && isEligibleForCertification(analysis.riskScore) && (
+          {!(finalContractAddress || contractAddress) && isEligibleForCertification(analysis.riskScore) && (
             <div className="mt-4 pt-4 border-t border-white/10">
               <div className="glass p-4 rounded-lg border border-yellow-500/30 bg-yellow-500/10">
                 <div className="flex items-center gap-2 text-yellow-400 mb-2">
