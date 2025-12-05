@@ -44,9 +44,20 @@ export async function checkCertificationStatus(contractAddress: string, provided
         method: "getBadgeByContract",
         params: [contractAddress as `0x${string}`],
       }) as bigint;
-      hasBadge = badgeId > 0n;
-    } catch (e) {
-      // No badge found
+      
+      // Only consider it has badge if badgeId is greater than 0
+      // badgeId = 0 means no badge exists
+      hasBadge = badgeId !== undefined && badgeId !== null && badgeId > 0n;
+      
+      console.log("[checkCertificationStatus] Badge check:", {
+        contractAddress,
+        badgeId: badgeId?.toString(),
+        hasBadge,
+      });
+    } catch (e: any) {
+      // No badge found or error reading - assume no badge
+      console.log("[checkCertificationStatus] No badge found or error:", e?.message || "Unknown error");
+      hasBadge = false;
     }
 
     // Can mint if certified, no badge exists, and (risk score is null OR < 40)

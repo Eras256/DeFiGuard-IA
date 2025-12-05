@@ -78,16 +78,31 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
   }, [isRecording, account, contractAddress]);
 
   // Check certification status when contract address is available
+  // Only check after a delay to ensure blockchain state is updated
   useEffect(() => {
     if (contractAddress && isRecorded) {
       setIsCheckingStatus(true);
-      // Pass riskScore to avoid fetching from contract (which may fail due to corrupted data)
-      checkCertificationStatus(contractAddress, analysis.riskScore).then(status => {
-        setCertificationStatus(status);
-        setIsCheckingStatus(false);
-      }).catch(() => {
-        setIsCheckingStatus(false);
-      });
+      // Wait a bit before checking to ensure blockchain state is updated
+      const timeoutId = setTimeout(() => {
+        console.log("[useEffect] Checking certification status...");
+        // Pass riskScore to avoid fetching from contract (which may fail due to corrupted data)
+        checkCertificationStatus(contractAddress, analysis.riskScore).then(status => {
+          console.log("[useEffect] Certification status result:", {
+            isCertified: status.isCertified,
+            hasBadge: status.hasBadge,
+            riskScore: status.riskScore,
+            canMintBadge: status.canMintBadge,
+          });
+          setCertificationStatus(status);
+          setIsCheckingStatus(false);
+        }).catch((err) => {
+          console.error("[useEffect] Error checking certification status:", err);
+          setIsCheckingStatus(false);
+          // Don't set status on error to avoid showing incorrect information
+        });
+      }, 2000); // Wait 2 seconds before checking
+      
+      return () => clearTimeout(timeoutId);
     }
   }, [contractAddress, isRecorded, analysis.riskScore]);
 
@@ -181,17 +196,27 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       window.dispatchEvent(new CustomEvent('audit-recorded'));
       
       // Wait a bit for transaction to confirm before updating
+      // Wait longer to ensure blockchain state is updated
       setTimeout(() => {
         window.dispatchEvent(new CustomEvent('audit-recorded'));
         // Check certification status after recording - pass riskScore to avoid fetching
         if (contractAddress) {
+          console.log("[Record Audit] Checking certification status after delay...");
           checkCertificationStatus(contractAddress, analysis.riskScore).then(status => {
+            console.log("[Record Audit] Certification status:", {
+              isCertified: status.isCertified,
+              hasBadge: status.hasBadge,
+              riskScore: status.riskScore,
+              canMintBadge: status.canMintBadge,
+            });
             setCertificationStatus(status);
           }).catch(err => {
             console.error("[Record Audit] Error checking certification status:", err);
+            // Set status to null on error to avoid showing incorrect information
+            setCertificationStatus(null);
           });
         }
-      }, 3000);
+      }, 5000); // Increased delay to 5 seconds to ensure blockchain state is updated
     } catch (error: any) {
       console.error("[Record Audit] Error:", error);
       console.error("[Record Audit] Error details:", {
