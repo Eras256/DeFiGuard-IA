@@ -44,7 +44,8 @@ export async function recordAudit(
 ) {
   const contract = await sdk.getContract(registryAddress);
   
-  const tx = await contract.call("recordAudit", [
+  // Use type assertion to handle SDK type limitations
+  const tx = await (contract as any).call("recordAudit", [
     contractAddress,
     riskScore,
     Math.floor(Date.now() / 1000),

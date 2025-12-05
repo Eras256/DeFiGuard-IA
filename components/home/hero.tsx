@@ -46,8 +46,8 @@ export function Hero({ totalAudits, loading = false }: HeroProps) {
             className="mb-8"
             whileHover={{ scale: 1.05 }}
           >
-            <GeminiBadge model="Gemini 2.5 Flash" />
-            <span className="ml-3 text-sm text-gray-400">+ Nullshot MCP Architecture</span>
+            <GeminiBadge model="GEMINI IA" />
+            <span className="ml-3 text-sm text-gray-400">+ MCP NullShot Architecture</span>
           </motion.div>
 
           {/* Main heading */}
@@ -60,8 +60,9 @@ export function Hero({ totalAudits, loading = false }: HeroProps) {
           {/* Subheading */}
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
             DeFiGuard IA analyzes Solidity contracts in 30 seconds using{" "}
-            <span className="text-primary font-semibold">Google Gemini AI</span>,
-            detecting vulnerabilities before deployment. Built with Nullshot MCP architecture.
+            <span className="text-primary font-semibold">GEMINI IA</span> +{" "}
+            <span className="text-primary font-semibold">MCP NullShot Architecture</span>,
+            detecting vulnerabilities before deployment.
           </p>
 
           {/* CTA Buttons */}

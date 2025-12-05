@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { analyzeContractWithGemini, VulnerabilityAnalysis } from "@/lib/ai/gemini-advanced";
+import { nullShotAuditorAgent } from "@/lib/agents/nullshot-auditor-agent";
+import { VulnerabilityAnalysis } from "@/lib/gemini/client";
 
 // Forzar runtime Node.js en Vercel
 export const runtime = "nodejs";
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { code } = body;
+    const { code, contractAddress } = body;
 
     if (!code || typeof code !== "string") {
       return NextResponse.json(
@@ -36,43 +37,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[API] Starting contract analysis with Gemini AI... Code length: ${code.length} chars`);
+    console.log(`[API] Starting contract analysis with GEMINI IA + MCP NullShot Architecture... Code length: ${code.length} chars`);
 
-    // Analyze contract using Gemini AI with fallback multi-model
-    const response = await analyzeContractWithGemini(code);
-
-    if (!response.success || !response.data) {
-      console.error("[API] Analysis failed:", response.error);
-      console.error("[API] Model used:", response.modelUsed);
-      return NextResponse.json(
-        {
-          success: false,
-          error: response.error || "Analysis failed",
-          modelUsed: response.modelUsed,
-        },
-        { status: 500 }
-      );
-    }
+    // Analyze contract using NullShot Framework with Gemini IA + MCP
+    const analysis = await nullShotAuditorAgent.analyzeContract(code, contractAddress);
 
     // Validar estructura de respuesta
-    if (!response.data.vulnerabilities || !Array.isArray(response.data.vulnerabilities)) {
-      console.error("[API] Invalid response structure:", response.data);
+    if (!analysis.vulnerabilities || !Array.isArray(analysis.vulnerabilities)) {
+      console.error("[API] Invalid response structure:", analysis);
       return NextResponse.json(
         {
           success: false,
           error: "Invalid analysis response structure. Please try again.",
-          modelUsed: response.modelUsed,
+          modelUsed: analysis.modelUsed,
         },
         { status: 500 }
       );
     }
 
-    console.log(`[API] ✅ Analysis complete. Model used: ${response.modelUsed}. Found ${response.data.vulnerabilities.length} vulnerabilities.`);
+    console.log(`[API] ✅ Analysis complete. Model used: ${analysis.modelUsed}. Found ${analysis.vulnerabilities.length} vulnerabilities. MCP Integration: ${analysis.mcpData ? 'Enabled' : 'Disabled'}`);
+
+    // Extraer solo los datos de análisis sin modelUsed y mcpData para compatibilidad
+    const { modelUsed, mcpData, ...analysisData } = analysis;
 
     return NextResponse.json({
       success: true,
-      data: response.data,
-      modelUsed: response.modelUsed,
+      data: analysisData,
+      modelUsed: modelUsed || "gemini-2.5-flash",
+      mcpEnabled: !!mcpData,
     });
   } catch (error: any) {
     console.error("[API] Error analyzing contract:", error);

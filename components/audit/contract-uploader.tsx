@@ -38,7 +38,7 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
         </div>
         <CardDescription>
           Paste your Solidity contract code below for AI-powered security analysis using{" "}
-          <span className="text-primary font-semibold">Google Gemini AI</span>
+          <span className="text-primary font-semibold">GEMINI IA + MCP NullShot Architecture</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -75,12 +75,12 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
               <>
                 <Sparkles className="mr-2 h-5 w-5 animate-pulse text-primary" />
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Analyzing with Gemini AI...
+                Analyzing with GEMINI IA + MCP NullShot...
               </>
             ) : (
               <>
                 <Upload className="mr-2 h-5 w-5" />
-                Analyze with Gemini AI
+                Analyze with GEMINI IA + MCP NullShot
               </>
             )}
           </Button>

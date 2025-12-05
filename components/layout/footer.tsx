@@ -39,7 +39,7 @@ export function Footer() {
               <span className="text-xl font-bold gradient-text">DeFiGuard AI</span>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              AI-powered smart contract security auditor using Gemini 2.5 Flash and MCP architecture.
+              AI-powered smart contract security auditor using GEMINI IA + MCP NullShot Architecture powered by AI SDK. Integrated MCP servers enhance security analysis.
             </p>
             <div className="flex space-x-4">
               <a

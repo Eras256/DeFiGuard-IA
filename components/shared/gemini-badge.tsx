@@ -15,7 +15,7 @@ export function GeminiBadge({ model, variant = "default", showModel = true }: Ge
   
   if (variant === "compact") {
     return (
-      <Badge className="glass border-primary/30 text-primary">
+      <Badge className="glass border-primary/30 bg-primary/20 text-white font-semibold">
         <Sparkles className="h-3 w-3 mr-1" />
         {displayModel}
       </Badge>
@@ -24,7 +24,7 @@ export function GeminiBadge({ model, variant = "default", showModel = true }: Ge
 
   if (variant === "inline") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-primary">
+      <span className="inline-flex items-center gap-1 text-xs text-white font-semibold">
         <Sparkles className="h-3 w-3" />
         <span className="font-medium">{displayModel}</span>
       </span>
@@ -37,9 +37,9 @@ export function GeminiBadge({ model, variant = "default", showModel = true }: Ge
       animate={{ opacity: 1, scale: 1 }}
       className="inline-flex items-center gap-2"
     >
-      <Badge className="glass border-primary/30 text-primary px-3 py-1.5">
+      <Badge className="glass border-primary/30 bg-primary/20 text-white px-3 py-1.5">
         <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
-        <span className="font-medium">Powered by</span>
+        <span className="font-semibold">Powered by</span>
         {showModel && (
           <span className="ml-1 font-bold">{displayModel}</span>
         )}

@@ -14,7 +14,7 @@ const steps = [
   {
     icon: Brain,
     title: "AI Analysis",
-    description: "Google Gemini AI analyzes your contract using multiple detection methods and MCP agents. Multi-model fallback ensures reliability.",
+    description: "GEMINI IA + MCP NullShot Architecture powered by AI SDK analyzes your contract using multiple detection methods and integrated MCP servers (Slither, Blockchain, DeFi). Multi-model fallback ensures reliability.",
     gemini: true,
   },
   {

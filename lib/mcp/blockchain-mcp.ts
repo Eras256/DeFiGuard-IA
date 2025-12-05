@@ -5,9 +5,20 @@ export class BlockchainMCP {
   name = "blockchain-data";
   description = "Fetches on-chain data and contract information";
 
-  private client = createThirdwebClient({
-    clientId: process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID!,
-  });
+  private _client: ReturnType<typeof createThirdwebClient> | null = null;
+
+  private get client() {
+    if (!this._client) {
+      const clientId = process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID;
+      if (!clientId) {
+        throw new Error("NEXT_PUBLIC_THIRDWEB_CLIENT_ID is not configured");
+      }
+      this._client = createThirdwebClient({
+        clientId,
+      });
+    }
+    return this._client;
+  }
 
   async getContractInfo(address: string, chainId: number): Promise<any> {
     try {

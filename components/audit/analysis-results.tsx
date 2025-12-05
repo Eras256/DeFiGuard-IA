@@ -287,11 +287,9 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
           </CardTitle>
           <CardDescription>
             {analysis.summary}
-            {modelUsed && (
-              <span className="block mt-2 text-xs text-gray-500">
-                Analysis powered by {modelUsed}
-              </span>
-            )}
+            <span className="block mt-2 text-xs text-gray-500">
+              Analysis powered by GEMINI IA + MCP NullShot Architecture
+            </span>
           </CardDescription>
         </CardHeader>
         <CardContent>

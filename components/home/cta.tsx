@@ -31,7 +31,7 @@ export function CTA() {
             </h2>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Join hundreds of developers using AI-powered security audits. Start protecting
+              Join hundreds of developers using AI-powered security audits powered by GEMINI IA + MCP NullShot Architecture. Start protecting
               your smart contracts today with DeFiGuard AI.
             </p>
 

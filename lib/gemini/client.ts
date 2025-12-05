@@ -1,18 +1,27 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Validar que la API key existe
+/**
+ * Obtiene la instancia de GoogleGenerativeAI de forma segura (solo en servidor)
+ * Esta función solo debe llamarse desde API routes o server components
+ */
+function getGeminiInstance(): GoogleGenerativeAI | null {
+  // Solo acceder a process.env en el servidor
+  if (typeof window !== 'undefined') {
+    console.error("❌ getGeminiInstance() called from client-side. This should only run on the server.");
+    return null;
+  }
+
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 if (!GEMINI_API_KEY) {
   console.warn("⚠️ GEMINI_API_KEY is not set in environment variables");
   console.warn("   Please add GEMINI_API_KEY to your .env.local file");
   console.warn("   Get your API key from: https://aistudio.google.com/app/apikey");
-} else {
-  console.log("✅ GEMINI_API_KEY loaded successfully");
+    return null;
 }
 
-// Crear instancia única de GoogleGenerativeAI
-const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
+  return new GoogleGenerativeAI(GEMINI_API_KEY);
+}
 
 export interface VulnerabilityAnalysis {
   vulnerabilities: Vulnerability[];
@@ -39,7 +48,10 @@ export interface AnalysisResult {
 
 export async function analyzeContractWithGemini(
   code: string
-): Promise<VulnerabilityAnalysis | AnalysisResult> {
+): Promise<VulnerabilityAnalysis> {
+  // Crear instancia solo cuando se necesita (solo en servidor)
+  const genAI = getGeminiInstance();
+  
   if (!genAI) {
     throw new Error("Gemini API key not configured. Please set GEMINI_API_KEY in .env.local");
   }
@@ -144,6 +156,9 @@ export async function generateRemediationCode(
   originalCode: string,
   vulnerability: Vulnerability
 ): Promise<string> {
+  // Crear instancia solo cuando se necesita (solo en servidor)
+  const genAI = getGeminiInstance();
+  
   if (!genAI) {
     throw new Error("Gemini API key not configured");
   }
@@ -206,6 +221,9 @@ Provide ONLY the fixed Solidity code. No explanations, no markdown blocks, just 
 export async function explainVulnerability(
   vulnerability: Vulnerability
 ): Promise<string> {
+  // Crear instancia solo cuando se necesita (solo en servidor)
+  const genAI = getGeminiInstance();
+  
   if (!genAI) {
     throw new Error("Gemini API key not configured");
   }

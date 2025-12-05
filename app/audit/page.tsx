@@ -60,7 +60,7 @@ export default function AuditPage() {
       if (result.data) {
         setAnalysis(result.data);
         setModelUsed(result.modelUsed || null);
-        toast.success(`Analysis complete! Powered by ${result.modelUsed || "Gemini AI"}`);
+        toast.success(`Analysis complete! Powered by GEMINI IA + MCP NullShot Architecture`);
       } else {
         throw new Error("No analysis data received");
       }
@@ -91,7 +91,7 @@ export default function AuditPage() {
           <GeminiBadge model={modelUsed || undefined} variant="compact" />
         </div>
         <p className="text-xl text-gray-400 mb-6">
-          AI-powered security analysis using <span className="text-primary font-semibold">Google Gemini AI</span> + Nullshot MCP
+          AI-powered security analysis using <span className="text-primary font-semibold">GEMINI IA</span> + MCP NullShot Architecture
         </p>
 
         {/* Status Cards */}

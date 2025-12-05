@@ -53,6 +53,32 @@ export class DeFiDataMCP {
       auditor: "DeFiGuard AI",
     };
   }
+
+  async getHistoricalExploits(contractCode: string): Promise<any[]> {
+    // Analizar el código para encontrar patrones similares a exploits históricos
+    const exploits = await this.getExploitHistory();
+    
+    // Filtrar exploits relevantes basados en patrones en el código
+    const relevantExploits = exploits.filter(exploit => {
+      const codeLower = contractCode.toLowerCase();
+      const exploitTypeLower = exploit.type.toLowerCase();
+      
+      // Buscar patrones relacionados con el tipo de exploit
+      if (exploitTypeLower.includes("reentrancy")) {
+        return codeLower.includes("call") || codeLower.includes("send") || codeLower.includes("transfer");
+      }
+      if (exploitTypeLower.includes("proxy")) {
+        return codeLower.includes("delegatecall") || codeLower.includes("proxy");
+      }
+      if (exploitTypeLower.includes("authentication")) {
+        return codeLower.includes("tx.origin") || codeLower.includes("msg.sender");
+      }
+      
+      return false;
+    });
+    
+    return relevantExploits;
+  }
 }
 
 export const defiDataMCP = new DeFiDataMCP();
