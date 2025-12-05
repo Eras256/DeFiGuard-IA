@@ -53,8 +53,12 @@ const AUDIT_REGISTRY_ABI = [
   },
 ] as const;
 
-function isValidAddress(address: string): boolean {
-  return /^0x[a-fA-F0-9]{40}$/.test(address);
+function isValidAddress(address: string | undefined | null): boolean {
+  if (!address) {
+    return false;
+  }
+  const trimmed = address.trim();
+  return /^0x[a-fA-F0-9]{40}$/.test(trimmed);
 }
 
 export async function POST(request: NextRequest) {

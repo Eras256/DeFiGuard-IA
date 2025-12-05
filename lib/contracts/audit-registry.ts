@@ -173,15 +173,26 @@ export interface Audit {
 /**
  * Validate Ethereum address format
  */
-function isValidAddress(address: string): boolean {
-  return /^0x[a-fA-F0-9]{40}$/.test(address);
+function isValidAddress(address: string | undefined | null): boolean {
+  if (!address) {
+    return false;
+  }
+  // Trim whitespace and convert to lowercase for validation
+  const trimmed = address.trim();
+  // Check if it's a valid Ethereum address format (40 hex chars after 0x)
+  return /^0x[a-fA-F0-9]{40}$/.test(trimmed);
 }
 
 export function getAuditRegistryContract() {
   const address = CONTRACT_ADDRESSES.AUDIT_REGISTRY;
   
+  if (!address) {
+    throw new Error(`AuditRegistry contract address is not defined. Check NEXT_PUBLIC_AUDIT_REGISTRY_ADDRESS environment variable.`);
+  }
+  
   if (!isValidAddress(address)) {
-    throw new Error(`Invalid AuditRegistry contract address: ${address}`);
+    console.error(`[getAuditRegistryContract] Invalid address format: "${address}" (length: ${address.length})`);
+    throw new Error(`Invalid AuditRegistry contract address: ${address}. Expected format: 0x followed by 40 hex characters.`);
   }
   
   return getContract({

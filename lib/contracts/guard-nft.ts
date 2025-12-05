@@ -110,15 +110,26 @@ export interface BadgeInfo {
 /**
  * Validate Ethereum address format
  */
-function isValidAddress(address: string): boolean {
-  return /^0x[a-fA-F0-9]{40}$/.test(address);
+function isValidAddress(address: string | undefined | null): boolean {
+  if (!address) {
+    return false;
+  }
+  // Trim whitespace and convert to lowercase for validation
+  const trimmed = address.trim();
+  // Check if it's a valid Ethereum address format (40 hex chars after 0x)
+  return /^0x[a-fA-F0-9]{40}$/.test(trimmed);
 }
 
 export function getGuardNFTContract() {
   const address = CONTRACT_ADDRESSES.GUARD_NFT;
   
+  if (!address) {
+    throw new Error(`GuardNFT contract address is not defined. Check NEXT_PUBLIC_GUARD_NFT_ADDRESS environment variable.`);
+  }
+  
   if (!isValidAddress(address)) {
-    throw new Error(`Invalid GuardNFT contract address: ${address}`);
+    console.error(`[getGuardNFTContract] Invalid address format: "${address}" (length: ${address.length})`);
+    throw new Error(`Invalid GuardNFT contract address: ${address}. Expected format: 0x followed by 40 hex characters.`);
   }
   
   return getContract({

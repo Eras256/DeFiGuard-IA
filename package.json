@@ -12,6 +12,7 @@
     "test:run": "vitest run",
     "deploy": "vercel --prod",
     "deploy:full": "node scripts/deploy-vercel.js",
+    "vercel:fix:addresses": "node scripts/fix-vercel-addresses.js",
     "vercel:env:setup": "node scripts/vercel-env-setup.js",
     "vercel:env:add": "node scripts/add-vercel-env.js",
     "deploy:contracts": "cross-env TS_NODE_PROJECT=tsconfig.hardhat.json hardhat run scripts/deploy.js --network baseSepolia",
