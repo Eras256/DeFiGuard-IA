@@ -39,10 +39,10 @@ export function HowItWorks() {
         transition={{ duration: 0.6 }}
         className="text-center mb-16"
       >
-        <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-2">
           <span className="gradient-text">How It Works</span>
         </h2>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
           From code upload to secure deployment in four simple steps
         </p>
       </motion.div>
@@ -51,7 +51,7 @@ export function HowItWorks() {
         {/* Connection lines */}
         <div className="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 relative z-10">
           {steps.map((step, index) => (
             <motion.div
               key={step.title}
@@ -61,27 +61,27 @@ export function HowItWorks() {
               transition={{ duration: 0.6, delay: index * 0.2 }}
               className="relative"
             >
-              <div className="glass p-6 rounded-lg text-center group hover:border-primary/50 transition-all">
+              <div className="glass p-4 sm:p-6 rounded-lg text-center group hover:border-primary/50 transition-all">
                 {/* Step number */}
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center font-bold text-sm">
+                <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center font-bold text-xs sm:text-sm">
                     {index + 1}
                   </div>
                 </div>
 
                 {/* Icon */}
-                <div className="mb-4 flex justify-center">
+                <div className="mb-3 sm:mb-4 flex justify-center">
                   <div className="relative">
-                    <step.icon className="h-16 w-16 text-primary group-hover:scale-110 transition-transform duration-300" />
+                    <step.icon className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 text-primary group-hover:scale-110 transition-transform duration-300" />
                     <div className="absolute inset-0 blur-xl bg-primary/30 group-hover:bg-primary/60 transition-all" />
                   </div>
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
                   {step.title}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-2">{step.description}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2 leading-relaxed">{step.description}</p>
                 {(step as any).gemini && (
                   <div className="flex justify-center mt-2">
                     <GeminiBadge variant="compact" />

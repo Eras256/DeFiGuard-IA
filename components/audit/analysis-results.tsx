@@ -46,7 +46,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
     setFinalContractAddress(contractAddress);
   }, [contractAddress]);
 
-  // Agregar listener directo al botón usando useRef
+  // Add direct listener to button using useRef
   useEffect(() => {
     const button = recordButtonRef.current;
     if (!button) {
@@ -237,7 +237,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
         }
       );
       
-      // Disparar evento personalizado para actualizar estadísticas
+      // Trigger custom event to update statistics
       window.dispatchEvent(new CustomEvent('audit-recorded'));
       
       // Wait a bit for transaction to confirm before updating
@@ -282,13 +282,13 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
         reason: error.reason,
       });
       
-      // Mejorar mensajes de error específicos
+      // Improve specific error messages
       let errorMessage = "Failed to record audit on-chain";
       
       if (error.message) {
         errorMessage = error.message;
         
-        // Mensajes específicos para errores comunes
+        // Specific messages for common errors
         if (error.message.includes("OwnableUnauthorizedAccount") || 
             error.message.includes("onlyOwner") ||
             error.message.includes("Ownable: caller is not the owner")) {
@@ -443,16 +443,16 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       {/* Overall Risk Score */}
       <Card className="glass glow-border">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between flex-wrap gap-4">
+          <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <span className="flex items-center gap-2">
-              <Shield className="h-6 w-6 text-primary" />
-              Security Analysis Complete
+              <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+              <span className="text-lg sm:text-xl font-bold">Security Analysis Complete</span>
             </span>
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
               <GeminiBadge model="GEMINI IA + MCP NULLSHOT" variant="compact" />
               <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold">Risk Score:</span>
-                <span className={`text-4xl font-bold ${getRiskScoreColor(analysis.riskScore)}`}>
+                <span className="text-lg sm:text-2xl font-bold">Risk Score:</span>
+                <span className={`text-2xl sm:text-4xl font-bold ${getRiskScoreColor(analysis.riskScore)}`}>
                   {analysis.riskScore}/100
                 </span>
               </div>
@@ -507,12 +507,12 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                 
                 return (
                   <div className={`glass p-4 rounded-lg border-2 ${borderColor}`}>
-                    <div className={`flex items-center gap-2 ${textColor} mb-2`}>
-                      <span className="text-2xl">{levelInfo.icon}</span>
-                      <Award className="h-6 w-6" />
-                      <span className="font-bold text-lg">{levelInfo.name}</span>
+                    <div className={`flex flex-wrap items-center gap-2 ${textColor} mb-2`}>
+                      <span className="text-xl sm:text-2xl">{levelInfo.icon}</span>
+                      <Award className="h-5 w-5 sm:h-6 sm:w-6" />
+                      <span className="font-bold text-base sm:text-lg">{levelInfo.name}</span>
                     </div>
-                    <p className="text-sm text-gray-300 mb-2">
+                    <p className="text-xs sm:text-sm text-gray-300 mb-2 leading-relaxed">
                       Your contract has a risk score of <span className="font-bold text-white">{analysis.riskScore}</span>, 
                       which grants it the <span className="font-bold">{levelInfo.name}</span> level.
                       By registering this audit on blockchain, your contract will be automatically certified 
@@ -587,13 +587,13 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                             "text-orange-400";
                           
                           return (
-                            <div className={`glass p-4 rounded-lg border-2 ${borderColor}`}>
-                              <div className={`flex items-center gap-2 ${textColor} mb-3`}>
-                                <span className="text-3xl">{levelInfo.icon}</span>
-                                <Award className="h-6 w-6" />
-                                <span className="font-bold text-lg">Contract Certified - {levelInfo.name}!</span>
+                            <div className={`glass p-3 sm:p-4 rounded-lg border-2 ${borderColor}`}>
+                              <div className={`flex flex-wrap items-center gap-2 ${textColor} mb-3`}>
+                                <span className="text-2xl sm:text-3xl">{levelInfo.icon}</span>
+                                <Award className="h-5 w-5 sm:h-6 sm:w-6" />
+                                <span className="font-bold text-base sm:text-lg">Contract Certified - {levelInfo.name}!</span>
                               </div>
-                              <p className="text-sm text-gray-300 mb-3">
+                              <p className="text-xs sm:text-sm text-gray-300 mb-3 leading-relaxed">
                                 Your contract has passed the audit with a risk score of <span className="font-bold text-white">{certificationStatus.riskScore}</span>,
                                 achieving the <span className="font-bold">{levelInfo.name}</span> level.
                                 You can obtain a {levelInfo.icon} NFT certificate as proof of security.
@@ -623,19 +623,27 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                                     disabled={isMintingBadge || !account}
                                     variant="glow"
                                     size="lg"
-                                    className="w-full mt-2"
+                                    className="w-full mt-2 text-sm sm:text-base"
                                   >
                                     {isMintingBadge ? (
                                       <>
-                                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                                        Obtaining {levelInfo.icon} NFT Certificate...
+                                        <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2 animate-spin" />
+                                        <span className="hidden sm:inline">Obtaining {levelInfo.icon} NFT Certificate...</span>
+                                        <span className="sm:hidden">Obtaining Certificate...</span>
                                       </>
                                     ) : (
                                       <>
-                                        <Award className="h-5 w-5 mr-2" />
-                                        {isDemoAddress && certificationStatus.hasBadge 
-                                          ? `Get Another ${levelInfo.icon} NFT Certificate - ${levelInfo.name} (Demo)`
-                                          : `Get ${levelInfo.icon} NFT Certificate - ${levelInfo.name}`}
+                                        <Award className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                                        <span className="hidden sm:inline">
+                                          {isDemoAddress && certificationStatus.hasBadge 
+                                            ? `Get Another ${levelInfo.icon} NFT Certificate - ${levelInfo.name} (Demo)`
+                                            : `Get ${levelInfo.icon} NFT Certificate - ${levelInfo.name}`}
+                                        </span>
+                                        <span className="sm:hidden">
+                                          {isDemoAddress && certificationStatus.hasBadge 
+                                            ? `Get Another ${levelInfo.icon} NFT (Demo)`
+                                            : `Get ${levelInfo.icon} NFT Certificate`}
+                                        </span>
                                       </>
                                     )}
                                   </Button>
@@ -696,7 +704,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                     </div>
                   )}
                   
-                  {/* Usar botón HTML nativo con ref y múltiples listeners */}
+                  {/* Use native HTML button with ref and multiple listeners */}
                   <button
                     ref={recordButtonRef}
                     onClick={(e) => {
@@ -712,7 +720,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                       e.preventDefault();
                       e.stopPropagation();
                       
-                      // Verificar que no esté deshabilitado
+                      // Check that it's not disabled
                       const addressToUse = finalContractAddress || contractAddress;
                       if (isRecording || !account || !addressToUse) {
                         console.warn("⚠️ Button click ignored - button is disabled");
@@ -720,7 +728,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
                         return;
                       }
                       
-                      // Llamar al handler
+                      // Call the handler
                       console.log("✅ Calling handleRecordOnChain from onClick...");
                       handleRecordOnChain().catch(err => {
                         console.error("❌ Error in handleRecordOnChain:", err);
@@ -804,8 +812,8 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
       {/* Vulnerabilities List */}
       {analysis.vulnerabilities.length > 0 ? (
         <div className="space-y-4">
-          <h3 className="text-2xl font-bold flex items-center gap-2">
-            <AlertTriangle className="h-6 w-6 text-orange-400" />
+          <h3 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-orange-400" />
             Detected Vulnerabilities
           </h3>
           {analysis.vulnerabilities.map((vulnerability, index) => (

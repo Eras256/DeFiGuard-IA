@@ -14,12 +14,10 @@ export enum CertificationLevel {
 export interface CertificationLevelInfo {
   level: CertificationLevel;
   name: string;
-  nameEs: string;
   minScore: number;
   maxScore: number;
   color: string;
   description: string;
-  descriptionEs: string;
   icon: string;
 }
 
@@ -27,56 +25,46 @@ export const CERTIFICATION_LEVELS: Record<CertificationLevel, CertificationLevel
   [CertificationLevel.NONE]: {
     level: CertificationLevel.NONE,
     name: "No Certified",
-    nameEs: "No Certificado",
     minScore: 40,
     maxScore: 100,
     color: "gray",
     description: "Contract does not meet certification requirements",
-    descriptionEs: "El contrato no cumple con los requisitos de certificación",
     icon: "❌",
   },
   [CertificationLevel.BRONZE]: {
     level: CertificationLevel.BRONZE,
     name: "Bronze Certification",
-    nameEs: "Certificación Bronce",
     minScore: 25,
     maxScore: 39,
     color: "orange",
     description: "Good security practices, low-moderate risk",
-    descriptionEs: "Buenas prácticas de seguridad, riesgo bajo-moderado",
     icon: "🥉",
   },
   [CertificationLevel.SILVER]: {
     level: CertificationLevel.SILVER,
     name: "Silver Certification",
-    nameEs: "Certificación Plata",
     minScore: 15,
     maxScore: 24,
     color: "gray",
     description: "Very good security practices, low risk",
-    descriptionEs: "Muy buenas prácticas de seguridad, riesgo bajo",
     icon: "🥈",
   },
   [CertificationLevel.GOLD]: {
     level: CertificationLevel.GOLD,
     name: "Gold Certification",
-    nameEs: "Certificación Oro",
     minScore: 5,
     maxScore: 14,
     color: "yellow",
     description: "Excellent security practices, very low risk",
-    descriptionEs: "Excelentes prácticas de seguridad, riesgo muy bajo",
     icon: "🥇",
   },
   [CertificationLevel.PLATINUM]: {
     level: CertificationLevel.PLATINUM,
     name: "Platinum Certification",
-    nameEs: "Certificación Platino",
     minScore: 0,
     maxScore: 4,
     color: "cyan",
     description: "Outstanding security, minimal risk - Highest certification level",
-    descriptionEs: "Seguridad excepcional, riesgo mínimo - Nivel de certificación más alto",
     icon: "💎",
   },
 };

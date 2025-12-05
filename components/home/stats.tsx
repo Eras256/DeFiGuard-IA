@@ -83,18 +83,18 @@ export function Stats({
   ];
 
   return (
-    <section className="py-20 px-4">
+    <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-12"
         >
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
             <span className="gradient-text">Real-Time</span> Statistics
           </h2>
-          <p className="text-xl text-gray-400">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 px-2">
             All audit registrations and NFT badges stored on Base Sepolia testnet • 100% on-chain • Real blockchain data
           </p>
         </motion.div>
@@ -104,7 +104,7 @@ export function Stats({
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
@@ -112,22 +112,22 @@ export function Stats({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="glass rounded-lg p-6 text-center hover:border-primary/50 transition-all"
+                className="glass rounded-lg p-3 sm:p-4 md:p-6 text-center hover:border-primary/50 transition-all"
               >
-                <stat.icon className={`h-12 w-12 ${stat.color} mx-auto mb-4`} />
-                <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
-                <div className="text-gray-300 font-medium mb-1">{stat.label}</div>
-                <div className="text-xs text-gray-500">{stat.sublabel}</div>
+                <stat.icon className={`h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 ${stat.color} mx-auto mb-2 sm:mb-3 md:mb-4`} />
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">{stat.value}</div>
+                <div className="text-xs sm:text-sm md:text-base text-gray-300 font-medium mb-1">{stat.label}</div>
+                <div className="text-[10px] sm:text-xs text-gray-500">{stat.sublabel}</div>
               </motion.div>
             ))}
           </div>
         )}
 
         {/* Live indicator */}
-        <div className="mt-8 text-center">
-          <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2">
+        <div className="mt-6 sm:mt-8 text-center px-4">
+          <div className="inline-flex flex-wrap items-center justify-center gap-2 glass rounded-full px-3 sm:px-4 py-1.5 sm:py-2">
             <div className="h-2 w-2 rounded-full bg-cyber-green animate-pulse"></div>
-            <span className="text-sm text-gray-400">
+            <span className="text-xs sm:text-sm text-gray-400">
               Live data from Base Sepolia • Auto-update every 30s
             </span>
           </div>
@@ -138,9 +138,9 @@ export function Stats({
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-8 glass rounded-lg p-6 text-center"
+          className="mt-6 sm:mt-8 glass rounded-lg p-4 sm:p-6 text-center"
         >
-          <p className="text-sm text-gray-400">
+          <p className="text-xs sm:text-sm text-gray-400 leading-relaxed px-2">
             <strong className="text-gray-300">On-Chain Storage:</strong> AuditRegistry contract (Base Sepolia) • GuardNFT contract (Base Sepolia) • 
             All audit registrations and certifications are permanently stored on Base Sepolia testnet using Thirdweb SDK + Viem
           </p>

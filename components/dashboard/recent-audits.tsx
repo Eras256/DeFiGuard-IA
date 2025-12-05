@@ -27,39 +27,39 @@ export function RecentAudits() {
 
   return (
     <Card className="glass">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" />
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+          <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
           Recent Security Audits
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
           Latest {recentAudits.length} audit{recentAudits.length !== 1 ? 's' : ''} from Base Sepolia blockchain • Real-time data
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6 pt-0">
         {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="flex items-center justify-center py-8 sm:py-12">
+            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-primary" />
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-red-400">
-            <AlertTriangle className="h-8 w-8 mx-auto mb-2" />
-            <p>{error}</p>
+          <div className="text-center py-8 sm:py-12 text-red-400">
+            <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2" />
+            <p className="text-xs sm:text-sm">{error}</p>
           </div>
         ) : recentAudits.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            <Shield className="h-8 w-8 mx-auto mb-2" />
-            <p>No audits found. Start auditing contracts to see them here!</p>
+          <div className="text-center py-8 sm:py-12 text-muted-foreground">
+            <Shield className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2" />
+            <p className="text-xs sm:text-sm">No audits found. Start auditing contracts to see them here!</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {recentAudits.map((audit) => (
               <div
                 key={audit.id}
-                className="glass p-4 rounded-lg hover:bg-white/10 transition-all cursor-pointer"
+                className="glass p-3 sm:p-4 rounded-lg hover:bg-white/10 transition-all cursor-pointer"
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-mono text-sm">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
+                  <div className="font-mono text-xs sm:text-sm break-all sm:break-normal">
                     {audit.contractAddress ? formatAddress(audit.contractAddress) : 'N/A'}
                   </div>
                   <Badge
@@ -68,17 +68,18 @@ export function RecentAudits() {
                       audit.riskScore < 60 ? "medium" :
                       audit.riskScore < 80 ? "high" : "critical"
                     }
+                    className="text-[10px] sm:text-xs"
                   >
                     Risk: {audit.riskScore}
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[10px] sm:text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     {formatTimestamp(audit.timestamp)}
                   </div>
                   {audit.auditor && audit.auditor !== '0x0000000000000000000000000000000000000000' && (
-                    <div className="font-mono text-xs">
+                    <div className="font-mono text-[10px] sm:text-xs break-all sm:break-normal">
                       {formatAddress(audit.auditor)}
                     </div>
                   )}

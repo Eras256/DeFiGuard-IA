@@ -85,43 +85,43 @@ export default function AuditPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
       {/* Header with connection status */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-4xl font-bold gradient-text">
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold gradient-text">
             Smart Contract Auditor
           </h1>
           <GeminiBadge model={modelUsed || undefined} variant="compact" />
         </div>
-        <p className="text-xl text-gray-400 mb-6">
+        <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-4 sm:mb-6">
           AI-powered security analysis using <span className="text-primary font-semibold">GEMINI IA</span> + MCP NullShot Architecture
         </p>
 
         {/* Status Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4">
           {/* Gemini Status */}
           <GeminiStatus />
 
           {/* Wallet Connection Status */}
           <Card className="glass">
-            <CardContent className="py-3 px-4">
+            <CardContent className="py-2.5 sm:py-3 px-3 sm:px-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {account ? (
                     <>
-                      <CheckCircle2 className="h-4 w-4 text-cyber-green" />
-                      <div>
-                        <div className="text-sm font-medium">Wallet Connected</div>
-                        <div className="text-xs text-gray-400">
+                      <CheckCircle2 className="h-4 w-4 text-cyber-green flex-shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-xs sm:text-sm font-medium">Wallet Connected</div>
+                        <div className="text-[10px] sm:text-xs text-gray-400 truncate">
                           {account.address.slice(0, 6)}...{account.address.slice(-4)}
                         </div>
                       </div>
                     </>
                   ) : (
                     <>
-                      <AlertCircle className="h-4 w-4 text-yellow-500" />
-                      <div className="text-sm text-gray-400">
+                      <AlertCircle className="h-4 w-4 text-yellow-500 flex-shrink-0" />
+                      <div className="text-xs sm:text-sm text-gray-400">
                         Connect wallet to record audits on-chain
                       </div>
                     </>
@@ -134,8 +134,8 @@ export default function AuditPage() {
 
         {/* Contract Addresses */}
         <Card className="glass">
-          <CardContent className="py-3 px-4">
-            <div className="flex flex-wrap items-center gap-4 text-xs">
+          <CardContent className="py-2.5 sm:py-3 px-3 sm:px-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 text-[10px] sm:text-xs">
               <span className="text-gray-400">Deployed Contracts:</span>
               <a
                 href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.AUDIT_REGISTRY}`}
@@ -159,16 +159,16 @@ export default function AuditPage() {
       </div>
 
       {/* Audit Statistics */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <AuditStats />
       </div>
 
       {/* Tabs to organize content */}
-      <Tabs defaultValue="analyze" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="analyze">Analyze Contract</TabsTrigger>
-          <TabsTrigger value="search">Search Audits</TabsTrigger>
-          <TabsTrigger value="recent">Recent Audits</TabsTrigger>
+      <Tabs defaultValue="analyze" className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-3 h-auto">
+          <TabsTrigger value="analyze" className="text-xs sm:text-sm py-2 sm:py-2.5">Analyze Contract</TabsTrigger>
+          <TabsTrigger value="search" className="text-xs sm:text-sm py-2 sm:py-2.5">Search Audits</TabsTrigger>
+          <TabsTrigger value="recent" className="text-xs sm:text-sm py-2 sm:py-2.5">Recent Audits</TabsTrigger>
         </TabsList>
 
         {/* Tab: Analyze Contract */}

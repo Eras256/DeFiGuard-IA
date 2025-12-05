@@ -42,14 +42,14 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
   return (
     <Card className="glass">
       <CardHeader>
-        <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-          <CardTitle className="flex items-center gap-2">
-            <FileCode className="h-6 w-6 text-primary" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <FileCode className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             Smart Contract Upload
           </CardTitle>
           <GeminiBadge variant="compact" />
         </div>
-        <CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
           Paste your Solidity contract code below for AI-powered security analysis using{" "}
           <span className="text-primary font-semibold">GEMINI IA + MCP NullShot Architecture</span>
         </CardDescription>
@@ -79,27 +79,29 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="// SPDX-License-Identifier: MIT&#10;pragma solidity ^0.8.0;&#10;&#10;contract MyContract {&#10;    // Your contract code here&#10;}"
-          className="w-full h-96 px-4 py-3 glass rounded-lg border border-white/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono text-sm resize-none transition-all"
+          className="w-full h-64 sm:h-80 md:h-96 px-3 sm:px-4 py-2 sm:py-3 glass rounded-lg border border-white/10 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 font-mono text-xs sm:text-sm resize-none transition-all"
           disabled={isAnalyzing}
         />
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <Button
             onClick={handleAnalyze}
             disabled={!code.trim() || isAnalyzing}
             variant="glow"
             size="lg"
-            className="flex-1"
+            className="flex-1 text-sm sm:text-base"
           >
             {isAnalyzing ? (
               <>
-                <Sparkles className="mr-2 h-5 w-5 animate-pulse text-primary" />
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Analyzing with GEMINI IA + MCP NullShot...
+                <Sparkles className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-pulse text-primary" />
+                <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                <span className="hidden sm:inline">Analyzing with GEMINI IA + MCP NullShot...</span>
+                <span className="sm:hidden">Analyzing...</span>
               </>
             ) : (
               <>
-                <Upload className="mr-2 h-5 w-5" />
-                Analyze with GEMINI IA + MCP NullShot
+                <Upload className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="hidden sm:inline">Analyze with GEMINI IA + MCP NullShot</span>
+                <span className="sm:hidden">Analyze Contract</span>
               </>
             )}
           </Button>
@@ -108,14 +110,15 @@ export function ContractUploader({ onAnalyze, isAnalyzing }: ContractUploaderPro
             disabled={isAnalyzing}
             variant="outline"
             size="lg"
+            className="text-sm sm:text-base"
           >
             Load Sample (Demo)
           </Button>
         </div>
-        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
           <Sparkles className="h-3 w-3 text-primary" />
-          <span>Analysis typically completes in 15-30 seconds</span>
-          <span>•</span>
+          <span className="text-center">Analysis typically completes in 15-30 seconds</span>
+          <span className="hidden sm:inline">•</span>
           <GeminiBadge variant="inline" />
         </div>
       </CardContent>

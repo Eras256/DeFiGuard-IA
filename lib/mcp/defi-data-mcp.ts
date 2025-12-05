@@ -55,15 +55,15 @@ export class DeFiDataMCP {
   }
 
   async getHistoricalExploits(contractCode: string): Promise<any[]> {
-    // Analizar el código para encontrar patrones similares a exploits históricos
+    // Analyze the code to find patterns similar to historical exploits
     const exploits = await this.getExploitHistory();
     
-    // Filtrar exploits relevantes basados en patrones en el código
+    // Filter relevant exploits based on patterns in the code
     const relevantExploits = exploits.filter(exploit => {
       const codeLower = contractCode.toLowerCase();
       const exploitTypeLower = exploit.type.toLowerCase();
       
-      // Buscar patrones relacionados con el tipo de exploit
+      // Search for patterns related to the exploit type
       if (exploitTypeLower.includes("reentrancy")) {
         return codeLower.includes("call") || codeLower.includes("send") || codeLower.includes("transfer");
       }

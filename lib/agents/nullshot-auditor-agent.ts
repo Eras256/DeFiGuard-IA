@@ -5,7 +5,7 @@ import { slitherMCP } from "../mcp/slither-mcp";
 import { blockchainMCP } from "../mcp/blockchain-mcp";
 import { defiDataMCP } from "../mcp/defi-data-mcp";
 
-// Configurar API key para AI SDK (usa GEMINI_API_KEY si GOOGLE_GENERATIVE_AI_API_KEY no está disponible)
+// Configure API key for AI SDK (use GEMINI_API_KEY if GOOGLE_GENERATIVE_AI_API_KEY is not available)
 if (typeof process !== 'undefined' && process.env) {
   if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY && process.env.GEMINI_API_KEY) {
     process.env.GOOGLE_GENERATIVE_AI_API_KEY = process.env.GEMINI_API_KEY;
@@ -39,7 +39,7 @@ export class NullShotAuditorAgent {
   ): Promise<VulnerabilityAnalysis & { modelUsed: string; mcpData?: any }> {
     console.log("[NullShotAuditorAgent] 🔍 Starting analysis with GEMINI IA + MCP NullShot Architecture...");
 
-    // Obtener datos adicionales de servidores MCP (siempre ejecutar Slither y DeFi, Blockchain solo si hay address)
+    // Get additional data from MCP servers (always run Slither and DeFi, Blockchain only if address exists)
     let mcpContext = "";
     try {
       const mcpPromises: Promise<any>[] = [
@@ -47,14 +47,14 @@ export class NullShotAuditorAgent {
         defiDataMCP.getHistoricalExploits(code),
       ];
 
-      // Agregar datos de blockchain solo si hay dirección de contrato
+      // Add blockchain data only if contract address exists
       if (contractAddress) {
         mcpPromises.push(blockchainMCP.getContractInfo(contractAddress, 84532)); // Base Sepolia
       }
 
       const mcpResults = await Promise.allSettled(mcpPromises);
       
-      // Construir contexto MCP
+      // Build MCP context
       const slitherData = mcpResults[0];
       const defiData = mcpResults[1];
       const blockchainData = contractAddress ? mcpResults[2] : { status: "fulfilled" as const, value: null };
@@ -108,7 +108,7 @@ export class NullShotAuditorAgent {
         lastError = error;
         console.warn(`[NullShotAuditorAgent] ⚠️ Model ${modelName} failed:`, error.message);
         
-        // Si es error de autenticación, no intentar otros modelos
+        // If it's an authentication error, don't try other models
         if (error.message?.includes("API key") || error.message?.includes("401") || error.message?.includes("403")) {
           break;
         }
@@ -122,7 +122,7 @@ export class NullShotAuditorAgent {
   }
 
   /**
-   * Construye el contexto de datos MCP
+   * Builds the MCP data context
    */
   private buildMCPContext(
     slitherData: PromiseSettledResult<any>,
@@ -147,7 +147,7 @@ export class NullShotAuditorAgent {
   }
 
   /**
-   * Construye el prompt de análisis con contexto MCP
+   * Builds the analysis prompt with MCP context
    */
   private buildAnalysisPrompt(code: string, mcpContext: string): string {
     return `You are an expert smart contract security auditor using GEMINI IA + MCP NullShot Architecture. Analyze this Solidity code for vulnerabilities.
@@ -192,23 +192,23 @@ Find ALL vulnerabilities including:
   }
 
   /**
-   * Parsea la respuesta del modelo a VulnerabilityAnalysis
+   * Parses the model response to VulnerabilityAnalysis
    */
   private parseAnalysisResponse(responseText: string): VulnerabilityAnalysis {
-    // Limpiar markdown si está presente
+    // Clean markdown if present
     const cleaned = responseText
       .replace(/```json\n?/g, "")
       .replace(/```\n?/g, "")
       .trim();
 
-    // Extraer JSON
+    // Extract JSON
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
     const jsonString = jsonMatch ? jsonMatch[0] : cleaned;
 
     try {
       const parsed = JSON.parse(jsonString);
       
-      // Validar estructura básica
+      // Validate basic structure
       if (!parsed.vulnerabilities || !Array.isArray(parsed.vulnerabilities)) {
         throw new Error("Invalid response structure: vulnerabilities array missing");
       }

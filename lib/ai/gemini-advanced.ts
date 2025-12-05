@@ -100,7 +100,7 @@ export async function callGemini(
         status: error.status,
         statusText: error.statusText,
       });
-      // Si es un error de API key o autenticación, no intentar otros modelos
+      // If it's an API key or authentication error, don't try other models
       if (error.message?.includes("API key") || error.message?.includes("401") || error.message?.includes("403")) {
         console.error("[AI] Authentication error detected. Stopping model fallback.");
         break;
@@ -121,7 +121,7 @@ export async function callGemini(
   }
 
   try {
-    // Verificar que result.response existe
+    // Verify that result.response exists
     if (!result || !result.response) {
       return {
         success: false,
@@ -163,7 +163,7 @@ export async function callGemini(
 }
 
 /**
- * Llama a Gemini y parsea la respuesta como JSON
+ * Calls Gemini and parses the response as JSON
  */
 export async function callGeminiJSON<T = any>(
   prompt: string,
@@ -181,17 +181,17 @@ export async function callGeminiJSON<T = any>(
   try {
     let responseText = String(response.data);
     
-    // Limpiar markdown code blocks si están presentes
+    // Clean markdown code blocks if present
     responseText = responseText
       .replace(/```json\n?/g, "")
       .replace(/```\n?/g, "")
       .trim();
     
-    // Intentar múltiples estrategias para extraer JSON válido
+    // Try multiple strategies to extract valid JSON
     let parsed: any = null;
     let parseError: Error | null = null;
     
-    // Estrategia 1: Buscar el primer objeto JSON completo
+    // Strategy 1: Find the first complete JSON object
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       try {
@@ -202,18 +202,18 @@ export async function callGeminiJSON<T = any>(
       }
     }
     
-    // Estrategia 2: Si falla, intentar reparar JSON común
+    // Strategy 2: If it fails, try to fix common JSON issues
     if (!parsed && jsonMatch) {
       try {
         let fixedJson = jsonMatch[0];
         
-        // Reparar comas finales en arrays y objetos
+        // Fix trailing commas in arrays and objects
         fixedJson = fixedJson.replace(/,(\s*[}\]])/g, '$1');
         
-        // Reparar comillas no escapadas en strings
+        // Fix unescaped quotes in strings
         fixedJson = fixedJson.replace(/([^\\])"/g, '$1\\"');
         
-        // Reparar saltos de línea no escapados
+        // Fix unescaped line breaks
         fixedJson = fixedJson.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
         
         parsed = JSON.parse(fixedJson);
@@ -224,10 +224,10 @@ export async function callGeminiJSON<T = any>(
       }
     }
     
-    // Estrategia 3: Intentar extraer solo el objeto principal si hay múltiples objetos
+    // Strategy 3: Try to extract only the main object if there are multiple objects
     if (!parsed) {
       try {
-        // Buscar desde el final hacia atrás para encontrar el objeto más grande
+        // Search from the end backwards to find the largest object
         let lastBrace = responseText.lastIndexOf('}');
         let firstBrace = responseText.indexOf('{');
         
@@ -262,7 +262,7 @@ export async function callGeminiJSON<T = any>(
       };
     }
     
-    // Validar estructura básica
+    // Validate basic structure
     if (typeof parsed !== "object" || parsed === null) {
       return {
         success: false,
@@ -289,7 +289,7 @@ export async function callGeminiJSON<T = any>(
 }
 
 /**
- * Analiza un contrato Solidity con Gemini
+ * Analyzes a Solidity contract with Gemini
  */
 export interface VulnerabilityAnalysis {
   vulnerabilities: Vulnerability[];
@@ -361,7 +361,7 @@ Find ALL vulnerabilities including:
 }
 
 /**
- * Genera código de remediación para una vulnerabilidad
+ * Generates remediation code for a vulnerability
  */
 export async function generateRemediationCode(
   originalCode: string,
@@ -393,7 +393,7 @@ Provide ONLY the fixed Solidity code. No explanations, no markdown blocks, just 
   });
 
   if (response.success && response.data) {
-    // Limpiar markdown si está presente
+    // Clean markdown if present
     const cleaned = String(response.data)
       .replace(/```solidity\n?/g, "")
       .replace(/```\n?/g, "")
@@ -410,7 +410,7 @@ Provide ONLY the fixed Solidity code. No explanations, no markdown blocks, just 
 }
 
 /**
- * Explica una vulnerabilidad en términos simples
+ * Explains a vulnerability in simple terms
  */
 export async function explainVulnerability(
   vulnerability: {

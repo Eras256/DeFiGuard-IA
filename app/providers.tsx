@@ -12,8 +12,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     
     if (!clientId) {
       console.error(
-        "❌ ERROR: NEXT_PUBLIC_THIRDWEB_CLIENT_ID no está configurado. " +
-        "Asegúrate de que esté en tu archivo .env.local y reinicia el servidor de desarrollo."
+        "❌ ERROR: NEXT_PUBLIC_THIRDWEB_CLIENT_ID is not configured. " +
+        "Make sure it's in your .env.local file and restart the development server."
       );
       // Return a client with empty string to prevent crashes
       return createThirdwebClient({
@@ -21,7 +21,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       });
     }
 
-    console.log("✅ Thirdweb client creado con clientId:", clientId.substring(0, 8) + "...");
+    console.log("✅ Thirdweb client created with clientId:", clientId.substring(0, 8) + "...");
     
     return createThirdwebClient({
       clientId: clientId,

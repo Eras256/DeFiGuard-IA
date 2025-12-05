@@ -26,12 +26,12 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
+          <Link href="/" className="flex items-center space-x-1 sm:space-x-2 group">
             <div className="relative">
-              <Shield className="h-8 w-8 text-primary group-hover:rotate-12 transition-transform duration-300" />
+              <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-primary group-hover:rotate-12 transition-transform duration-300" />
               <div className="absolute inset-0 blur-xl bg-primary/50 group-hover:bg-primary/70 transition-all" />
             </div>
-            <span className="text-xl font-bold gradient-text">DeFiGuard AI</span>
+            <span className="text-lg sm:text-xl font-bold gradient-text">DeFiGuard AI</span>
             <span className="text-xs text-gray-500 hidden sm:inline">Base Sepolia</span>
           </Link>
 
@@ -61,34 +61,34 @@ export function Navbar() {
               <button className="text-sm font-medium text-muted-foreground hover:text-primary flex items-center gap-1">
                 Contracts <ExternalLink className="h-3 w-3" />
               </button>
-              <div className="absolute top-full right-0 mt-2 w-80 glass rounded-lg p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+              <div className="absolute top-full right-0 mt-2 w-72 sm:w-80 glass rounded-lg p-3 sm:p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 <div className="space-y-2 text-xs">
                   <a
                     href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.AUDIT_REGISTRY}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block hover:text-primary transition-colors"
+                    className="block hover:text-primary transition-colors break-all"
                   >
                     <div className="font-medium">AuditRegistry</div>
-                    <div className="text-gray-500 font-mono">{CONTRACT_ADDRESSES.AUDIT_REGISTRY}</div>
+                    <div className="text-gray-500 font-mono text-[10px] sm:text-xs">{CONTRACT_ADDRESSES.AUDIT_REGISTRY}</div>
                   </a>
                   <a
                     href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.GUARD_NFT}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block hover:text-primary transition-colors"
+                    className="block hover:text-primary transition-colors break-all"
                   >
                     <div className="font-medium">GuardNFT</div>
-                    <div className="text-gray-500 font-mono">{CONTRACT_ADDRESSES.GUARD_NFT}</div>
+                    <div className="text-gray-500 font-mono text-[10px] sm:text-xs">{CONTRACT_ADDRESSES.GUARD_NFT}</div>
                   </a>
                   <a
                     href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.GUARD_TOKEN}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block hover:text-primary transition-colors"
+                    className="block hover:text-primary transition-colors break-all"
                   >
                     <div className="font-medium">GuardToken</div>
-                    <div className="text-gray-500 font-mono">{CONTRACT_ADDRESSES.GUARD_TOKEN}</div>
+                    <div className="text-gray-500 font-mono text-[10px] sm:text-xs">{CONTRACT_ADDRESSES.GUARD_TOKEN}</div>
                   </a>
                 </div>
               </div>
@@ -128,7 +128,41 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <div className="px-3 py-2">
+            {/* Mobile Contracts Links */}
+            <div className="px-3 py-2 border-t border-white/10 mt-2 pt-3">
+              <div className="text-xs font-semibold text-gray-400 mb-2">CONTRACTS</div>
+              <a
+                href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.AUDIT_REGISTRY}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors break-all"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div className="font-medium">AuditRegistry</div>
+                <div className="text-xs font-mono text-gray-500">{CONTRACT_ADDRESSES.AUDIT_REGISTRY.slice(0, 20)}...</div>
+              </a>
+              <a
+                href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.GUARD_NFT}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors break-all"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div className="font-medium">GuardNFT</div>
+                <div className="text-xs font-mono text-gray-500">{CONTRACT_ADDRESSES.GUARD_NFT.slice(0, 20)}...</div>
+              </a>
+              <a
+                href={`https://sepolia.basescan.org/address/${CONTRACT_ADDRESSES.GUARD_TOKEN}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors break-all"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div className="font-medium">GuardToken</div>
+                <div className="text-xs font-mono text-gray-500">{CONTRACT_ADDRESSES.GUARD_TOKEN.slice(0, 20)}...</div>
+              </a>
+            </div>
+            <div className="px-3 py-2 border-t border-white/10 mt-2 pt-3">
               <ConnectButton client={thirdwebClient} />
             </div>
           </div>

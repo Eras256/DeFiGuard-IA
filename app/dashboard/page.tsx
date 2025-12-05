@@ -82,62 +82,62 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4 gradient-text">Dashboard</h1>
-        <p className="text-xl text-gray-400">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 gradient-text">Dashboard</h1>
+        <p className="text-base sm:text-lg md:text-xl text-gray-400">
           Real-time blockchain data - 100% on-chain, zero mock
         </p>
 
         {/* Live Data Indicator */}
-        <div className="mt-4 inline-flex items-center gap-2 glass rounded-full px-4 py-2">
+        <div className="mt-3 sm:mt-4 inline-flex flex-wrap items-center gap-2 glass rounded-full px-3 sm:px-4 py-1.5 sm:py-2">
           <div className="h-2 w-2 rounded-full bg-cyber-green animate-pulse"></div>
-          <span className="text-sm text-gray-400">
+          <span className="text-xs sm:text-sm text-gray-400">
             Live from AuditRegistry ({CONTRACT_ADDRESSES.AUDIT_REGISTRY.slice(0, 6)}...{CONTRACT_ADDRESSES.AUDIT_REGISTRY.slice(-4)}) & GuardNFT ({CONTRACT_ADDRESSES.GUARD_NFT.slice(0, 6)}...{CONTRACT_ADDRESSES.GUARD_NFT.slice(-4)})
           </span>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
         {stats.map((stat, index) => (
           <Card key={index} className="glass">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                <div className="text-3xl font-bold text-white">{stat.value}</div>
+            <CardContent className="p-3 sm:p-4 md:p-6">
+              <div className="flex items-center justify-between mb-2 sm:mb-3 md:mb-4">
+                <stat.icon className={`h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 ${stat.color}`} />
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white">{stat.value}</div>
               </div>
-              <div className="text-sm font-medium text-gray-300 mb-1">{stat.label}</div>
-              <div className="text-xs text-gray-500">{stat.subtext}</div>
+              <div className="text-xs sm:text-sm font-medium text-gray-300 mb-1">{stat.label}</div>
+              <div className="text-[10px] sm:text-xs text-gray-500">{stat.subtext}</div>
             </CardContent>
           </Card>
         ))}
       </div>
 
       {/* Data Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8">
         <RecentAudits />
         <NFTBadges />
       </div>
 
       {/* Certification Levels Info */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <CertificationLevelsInfo />
       </div>
 
       <RiskChart />
 
       {/* Data Source Footer */}
-      <Card className="glass mt-8">
-        <CardHeader>
-          <CardTitle className="text-sm">Data Sources</CardTitle>
+      <Card className="glass mt-6 sm:mt-8">
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-xs sm:text-sm">Data Sources</CardTitle>
         </CardHeader>
-        <CardContent className="text-xs text-gray-400 space-y-2">
-          <div>
-            <strong className="text-gray-300">AuditRegistry:</strong> {CONTRACT_ADDRESSES.AUDIT_REGISTRY} (Base Sepolia)
+        <CardContent className="text-xs text-gray-400 space-y-2 p-4 sm:p-6 pt-0">
+          <div className="break-words">
+            <strong className="text-gray-300">AuditRegistry:</strong> <span className="font-mono text-[10px] sm:text-xs">{CONTRACT_ADDRESSES.AUDIT_REGISTRY}</span> (Base Sepolia)
           </div>
-          <div>
-            <strong className="text-gray-300">GuardNFT:</strong> {CONTRACT_ADDRESSES.GUARD_NFT} (Base Sepolia)
+          <div className="break-words">
+            <strong className="text-gray-300">GuardNFT:</strong> <span className="font-mono text-[10px] sm:text-xs">{CONTRACT_ADDRESSES.GUARD_NFT}</span> (Base Sepolia)
           </div>
           <div>
             <strong className="text-gray-300">Network:</strong> Base Sepolia Testnet (Chain ID: 84532)

@@ -75,15 +75,15 @@ export function Features() {
         transition={{ duration: 0.6 }}
         className="text-center mb-16"
       >
-        <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-2">
           <span className="gradient-text">Advanced Security Features</span>
         </h2>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+        <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
           Enterprise-level smart contract auditing powered by GEMINI IA + MCP NullShot Architecture using AI SDK and integrated MCP servers
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {features.map((feature, index) => (
           <motion.div
             key={feature.title}
@@ -93,20 +93,20 @@ export function Features() {
             transition={{ duration: 0.5, delay: index * 0.1 }}
           >
             <Card className="h-full glass-hover group cursor-pointer">
-              <CardHeader>
-                <div className="mb-4 flex items-center justify-between">
+              <CardHeader className="p-4 sm:p-6">
+                <div className="mb-3 sm:mb-4 flex items-center justify-between">
                   <div className="relative inline-block">
-                    <feature.icon className="h-12 w-12 text-primary group-hover:scale-110 transition-transform duration-300" />
+                    <feature.icon className="h-10 w-10 sm:h-12 sm:w-12 text-primary group-hover:scale-110 transition-transform duration-300" />
                     <div className="absolute inset-0 blur-xl bg-primary/30 group-hover:bg-primary/50 transition-all" />
                   </div>
                   {(feature as any).gemini && (
                     <GeminiBadge variant="compact" />
                   )}
                 </div>
-                <CardTitle className="group-hover:text-primary transition-colors">
+                <CardTitle className="text-base sm:text-lg group-hover:text-primary transition-colors">
                   {feature.title}
                 </CardTitle>
-                <CardDescription className="text-muted-foreground">
+                <CardDescription className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                   {feature.description}
                 </CardDescription>
               </CardHeader>

@@ -131,7 +131,7 @@ Find ALL vulnerabilities including:
         .replace(/```\n?/g, "")
         .trim();
       
-      // Intentar extraer JSON si está envuelto en markdown
+      // Try to extract JSON if wrapped in markdown
       const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
       const jsonString = jsonMatch ? jsonMatch[0] : cleanedResponse;
       
@@ -139,7 +139,7 @@ Find ALL vulnerabilities including:
       modelUsed = modelName;
       console.log(`[AI] ✅ Successfully used model: ${modelName}`);
       
-      // Retornar solo el análisis para mantener compatibilidad
+      // Return only the analysis to maintain compatibility
       return analysis;
     } catch (error: any) {
       lastError = error;
@@ -202,7 +202,7 @@ Provide ONLY the fixed Solidity code. No explanations, no markdown blocks, just 
       const result = await model.generateContent(prompt);
       const response = result.response.text();
       
-      // Limpiar markdown si está presente
+      // Clean markdown if present
       const cleaned = response
         .replace(/```solidity\n?/g, "")
         .replace(/```\n?/g, "")

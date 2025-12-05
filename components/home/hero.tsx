@@ -53,14 +53,14 @@ export function Hero({ totalAudits, totalNFTs, certifiedContracts, loading = fal
           </motion.div>
 
           {/* Main heading */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 px-2">
             <span className="gradient-text">Secure Your Smart Contracts</span>
             <br />
             <span className="text-white">with AI-Powered Audits</span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto px-4 leading-relaxed">
             DeFiGuard IA analyzes Solidity contracts from any EVM-compatible chain in 30 seconds using{" "}
             <span className="text-primary font-semibold">GEMINI IA</span> +{" "}
             <span className="text-primary font-semibold">MCP NullShot Architecture</span>,
@@ -68,74 +68,74 @@ export function Hero({ totalAudits, totalNFTs, certifiedContracts, loading = fal
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link href="/audit">
-              <Button size="lg" variant="glow" className="text-lg px-8 py-6 group">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 px-4">
+            <Link href="/audit" className="w-full sm:w-auto">
+              <Button size="lg" variant="glow" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 group">
                 Start Free Audit
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Link href="/dashboard">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6">
+            <Link href="/dashboard" className="w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6">
                 View Dashboard
               </Button>
             </Link>
           </div>
 
           {/* Real-time Stats from Blockchain */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 max-w-5xl mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="glass rounded-lg p-6"
+              className="glass rounded-lg p-4 sm:p-6"
             >
-              <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
-              <div className="text-4xl font-bold text-white mb-2">
+              <Shield className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-primary mx-auto mb-2 sm:mb-4" />
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">
                 {loading ? "..." : totalAudits.toLocaleString()}
               </div>
-              <div className="text-gray-400">On-Chain Audits</div>
-              <div className="text-xs text-gray-500 mt-1">Base Sepolia</div>
+              <div className="text-xs sm:text-sm text-gray-400">On-Chain Audits</div>
+              <div className="text-[10px] sm:text-xs text-gray-500 mt-1">Base Sepolia</div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="glass rounded-lg p-6"
+              className="glass rounded-lg p-4 sm:p-6"
             >
-              <Award className="h-12 w-12 text-cyber-purple mx-auto mb-4" />
-              <div className="text-4xl font-bold text-white mb-2">
+              <Award className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-cyber-purple mx-auto mb-2 sm:mb-4" />
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">
                 {loading ? "..." : totalNFTs.toLocaleString()}
               </div>
-              <div className="text-gray-400">NFT Badges Minted</div>
-              <div className="text-xs text-gray-500 mt-1">Certifications</div>
+              <div className="text-xs sm:text-sm text-gray-400">NFT Badges Minted</div>
+              <div className="text-[10px] sm:text-xs text-gray-500 mt-1">Certifications</div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="glass rounded-lg p-6"
+              className="glass rounded-lg p-4 sm:p-6"
             >
-              <Zap className="h-12 w-12 text-cyber-green mx-auto mb-4" />
-              <div className="text-4xl font-bold text-white mb-2">
+              <Zap className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-cyber-green mx-auto mb-2 sm:mb-4" />
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">
                 {loading ? "..." : certifiedContracts.toLocaleString()}
               </div>
-              <div className="text-gray-400">Certified Contracts</div>
-              <div className="text-xs text-gray-500 mt-1">Risk score &lt; 40</div>
+              <div className="text-xs sm:text-sm text-gray-400">Certified Contracts</div>
+              <div className="text-[10px] sm:text-xs text-gray-500 mt-1">Risk score &lt; 40</div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="glass rounded-lg p-6"
+              className="glass rounded-lg p-4 sm:p-6"
             >
-              <Lock className="h-12 w-12 text-cyber-pink mx-auto mb-4" />
-              <div className="text-4xl font-bold text-white mb-2">30s</div>
-              <div className="text-gray-400">Average Time</div>
-              <div className="text-xs text-gray-500 mt-1">Complete analysis</div>
+              <Lock className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-cyber-pink mx-auto mb-2 sm:mb-4" />
+              <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1 sm:mb-2">30s</div>
+              <div className="text-xs sm:text-sm text-gray-400">Average Time</div>
+              <div className="text-[10px] sm:text-xs text-gray-500 mt-1">Complete analysis</div>
             </motion.div>
           </div>
 
