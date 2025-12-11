@@ -1,5 +1,5 @@
 /**
- * Test de integración MCP con NullShot Auditor Agent
+ * Test de integración MCP con Advanced Auditor Agent
  * Ejecutar con: pnpm exec tsx lib/agents/__tests__/test-mcp-integration.ts
  */
 
@@ -8,7 +8,7 @@ process.env.GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 process.env.GOOGLE_GENERATIVE_AI_API_KEY = process.env.GEMINI_API_KEY;
 process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID = process.env.NEXT_PUBLIC_THIRDWEB_CLIENT_ID || "test-client-id";
 
-import { nullShotAuditorAgent } from "../nullshot-auditor-agent";
+import { advancedAuditorAgent } from "../advanced-auditor-agent";
 
 const testContract = `
 pragma solidity ^0.8.0;
@@ -34,7 +34,7 @@ contract VulnerableContract {
 `;
 
 async function testMCPIntegration() {
-  console.log("🧪 Testing MCP Integration with NullShot Auditor Agent\n");
+  console.log("🧪 Testing MCP Integration with Advanced Auditor Agent\n");
   console.log("=" .repeat(60));
   
   try {
@@ -49,7 +49,7 @@ async function testMCPIntegration() {
     console.log("  ✗ Blockchain MCP (no contract address provided)\n");
     
     const startTime = Date.now();
-    const result = await nullShotAuditorAgent.analyzeContract(testContract);
+    const result = await advancedAuditorAgent.analyzeContract(testContract);
     const duration = Date.now() - startTime;
     
     console.log("\n" + "=".repeat(60));

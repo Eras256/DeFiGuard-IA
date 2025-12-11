@@ -48,8 +48,8 @@ export function Hero({ totalAudits, totalNFTs, certifiedContracts, loading = fal
             className="mb-8"
             whileHover={{ scale: 1.05 }}
           >
-            <GeminiBadge model="GEMINI IA" />
-            <span className="ml-3 text-sm text-gray-400">+ MCP NullShot Architecture</span>
+            <GeminiBadge model="GEMINI AI" />
+            <span className="ml-3 text-sm text-gray-400">+ MCP Architecture</span>
           </motion.div>
 
           {/* Main heading */}
@@ -62,8 +62,8 @@ export function Hero({ totalAudits, totalNFTs, certifiedContracts, loading = fal
           {/* Subheading */}
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 sm:mb-8 max-w-3xl mx-auto px-4 leading-relaxed">
             DeFiGuard IA analyzes Solidity contracts from any EVM-compatible chain in 30 seconds using{" "}
-            <span className="text-primary font-semibold">GEMINI IA</span> +{" "}
-            <span className="text-primary font-semibold">MCP NullShot Architecture</span>,
+            <span className="text-primary font-semibold">Gemini AI</span> +{" "}
+            <span className="text-primary font-semibold">MCP Architecture</span>,
             detecting vulnerabilities before deployment. Audit registration and NFT badges are stored on-chain on Base Sepolia testnet.
           </p>
 

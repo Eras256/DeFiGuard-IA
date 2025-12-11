@@ -15,7 +15,7 @@ export function Footer() {
       { label: "NFT Badges", href: "/dashboard", description: "View certification badges" },
     ],
     resources: [
-      { label: "NullShot Framework", href: "https://nullshot.ai", description: "Built on NullShot Architecture" },
+      { label: "MCP Architecture", href: "https://modelcontextprotocol.io", description: "Model Context Protocol" },
       { label: "Security Best Practices", href: "/security-best-practices", description: "Smart contract security guidelines" },
       { label: "API Documentation", href: "/api-documentation", description: "Integration guides and API reference" },
       { label: "Tutorials", href: "/tutorials", description: "Learn how to use DeFiGuard AI" },
@@ -38,7 +38,7 @@ export function Footer() {
               <span className="text-lg sm:text-xl font-bold gradient-text">DeFiGuard AI</span>
             </div>
             <p className="text-xs sm:text-sm text-muted-foreground mb-4 leading-relaxed">
-              AI-powered smart contract security auditor using GEMINI IA + MCP NullShot Architecture powered by AI SDK. Integrated MCP servers enhance security analysis with comprehensive vulnerability detection.
+              AI-powered smart contract security auditor using Gemini AI + MCP Architecture powered by AI SDK. Integrated MCP servers enhance security analysis with comprehensive vulnerability detection.
             </p>
             <div className="flex items-center gap-2 mb-4">
               <Zap className="h-4 w-4 text-primary" />
@@ -87,7 +87,7 @@ export function Footer() {
 
         <div className="border-t border-white/10 mt-6 sm:mt-8 pt-6 sm:pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
-            © {currentYear} DeFiGuard AI. Built for NullShot Hacks Season 0.
+            © {currentYear} DeFiGuard AI. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6">
             <Link

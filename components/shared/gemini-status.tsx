@@ -15,7 +15,7 @@ export function GeminiStatus() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-xs font-medium">GEMINI IA</span>
+            <span className="text-xs font-medium">GEMINI AI</span>
           </div>
           
           <Badge className="bg-cyber-green/20 border-cyber-green/50 text-cyber-green">

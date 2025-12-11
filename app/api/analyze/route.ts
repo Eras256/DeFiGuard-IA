@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { nullShotAuditorAgent } from "@/lib/agents/nullshot-auditor-agent";
+import { advancedAuditorAgent } from "@/lib/agents/advanced-auditor-agent";
 import { VulnerabilityAnalysis } from "@/lib/gemini/client";
 
 // Force Node.js runtime on Vercel
@@ -37,10 +37,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[API] Starting contract analysis with GEMINI IA + MCP NullShot Architecture... Code length: ${code.length} chars`);
+    console.log(`[API] Starting contract analysis with Gemini AI + MCP Architecture... Code length: ${code.length} chars`);
 
-    // Analyze contract using NullShot Framework with Gemini IA + MCP
-    const analysis = await nullShotAuditorAgent.analyzeContract(code, contractAddress);
+    // Analyze contract using Advanced Auditor Agent with Gemini AI + MCP
+    const analysis = await advancedAuditorAgent.analyzeContract(code, contractAddress);
 
     // Validate response structure
     if (!analysis.vulnerabilities || !Array.isArray(analysis.vulnerabilities)) {

@@ -14,7 +14,7 @@ const steps = [
   {
     icon: Brain,
     title: "AI Analysis",
-    description: "GEMINI IA + MCP NullShot Architecture powered by AI SDK analyzes your contract using multiple detection methods and integrated MCP servers (Slither, Blockchain, DeFi). Multi-model fallback system ensures reliability.",
+    description: "Gemini AI + MCP Architecture powered by AI SDK analyzes your contract using multiple detection methods and integrated MCP servers (Slither, Blockchain, DeFi). Multi-model fallback system ensures reliability.",
     gemini: true,
   },
   {

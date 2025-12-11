@@ -31,7 +31,7 @@ export function CTA() {
             </h2>
 
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Analyze contracts from any EVM-compatible chain using AI-powered security audits with GEMINI IA + MCP NullShot Architecture. 
+              Analyze contracts from any EVM-compatible chain using AI-powered security audits with Gemini AI + MCP Architecture. 
               Register audits and earn NFT badges on Base Sepolia testnet. Start protecting your smart contracts today.
             </p>
 

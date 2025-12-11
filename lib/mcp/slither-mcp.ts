@@ -5,7 +5,7 @@ export class SlitherMCP {
 
   async analyze(contractCode: string): Promise<any> {
     // In production, this would call actual Slither CLI
-    // For hackathon demo, we simulate the analysis
+    // Simulate static analysis (in production, this would call Slither tool)
     console.log("🔍 Running Slither static analysis...");
     
     // Simulated Slither output

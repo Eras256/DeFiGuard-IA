@@ -175,7 +175,7 @@ export default function ContactPage() {
                   <span>Follow us on Twitter</span>
                 </a>
                 <a
-                  href="https://discord.gg/nullshot"
+                  href="https://twitter.com/defiguard_ai"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors"

@@ -1,10 +1,7 @@
 # 🛡️ DeFiGuard AI - AI-Powered Smart Contract Security Auditor
 
-Built for **NullShot Hacks Season 0 - Track 1b**
-
 ![DeFiGuard AI](https://img.shields.io/badge/Built%20With-Gemini%202.5%20Flash-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Framework](https://img.shields.io/badge/Framework-Nullshot-purple)
 ![Base Sepolia](https://img.shields.io/badge/Network-Base%20Sepolia-blue)
 ![Verified](https://img.shields.io/badge/Contracts-Verified-success)
 
@@ -21,7 +18,7 @@ DeFiGuard AI is an advanced AI-powered smart contract security auditor that leve
 - 📊 **Risk Scoring** - Comprehensive security analysis with severity levels
 - 🏆 **NFT Certification** - On-chain verification badges for audited contracts
 - 📡 **Real-Time Monitoring** - Continuous surveillance of deployed contracts
-- 🧠 **MCP Architecture** - Built on Nullshot Framework for agent interoperability
+- 🧠 **MCP Architecture** - Model Context Protocol for enhanced security analysis
 - 🔐 **Decentralized Minting** - Contract owners mint badges directly from their wallets
 
 ## 🛠️ Tech Stack
@@ -35,9 +32,9 @@ DeFiGuard AI is an advanced AI-powered smart contract security auditor that leve
 
 ### AI & Agents
 - **Gemini 2.5 Flash** - Google's latest AI model
-- **Nullshot MCP Architecture** - Model Context Protocol implementation
+- **MCP Architecture** - Model Context Protocol implementation
 - **Custom MCP Servers** - Slither, Blockchain Data, DeFi Analytics
-- **AI Agents** - AuditorAgent, RiskAgent, RemediationAgent
+- **AI Agents** - AdvancedAuditorAgent, RiskAgent, RemediationAgent
 
 ### Blockchain
 - **Thirdweb SDK** - Multi-chain infrastructure
@@ -126,13 +123,9 @@ pnpm vercel login
 pnpm deploy
 ```
 
-### Publish to Nullshot Jam
+### Deploy to Production
 
-1. Go to [nullshot.ai/jam](https://nullshot.ai/jam)
-2. Click "New Jam" → "Import from GitHub"
-3. Connect your repository
-4. Click "Publish Product"
-5. Your app is now live on Nullshot!
+Deploy your application to your preferred hosting platform (Vercel, Netlify, etc.) for production use.
 
 ### Deploy Smart Contracts
 
@@ -199,7 +192,7 @@ pnpm verify:updated
 │  │  - Validates     │  │  - Prepares      │  │  - Checks        │                      │
 │  │    contract code │  │    transaction   │  │    certification │                      │
 │  │  - Calls         │  │  - Uses          │  │  - Mints NFT     │                      │
-│  │    NullShotAgent │  │    Thirdweb SDK  │  │    badge         │                      │
+│  │    AdvancedAgent │  │    Thirdweb SDK  │  │    badge         │                      │
 │  └────────┬─────────┘  └────────┬─────────┘  └────────┬─────────┘                      │
 │           │                      │                      │                                  │
 │           │                      │                      │                                  │
@@ -215,11 +208,11 @@ pnpm verify:updated
                                │
 ┌──────────────────────────────▼───────────────────────────────────────────────────────────┐
 │                            AI AGENTS LAYER                                               │
-│                    (Nullshot MCP Architecture)                                           │
+│                    (MCP Architecture)                                                      │
 ├─────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                           │
 │  ┌─────────────────────────────────────────────────────────────────────┐              │
-│  │              NullShotAuditorAgent (Main Agent)                        │              │
+│  │              AdvancedAuditorAgent (Main Agent)                       │              │
 │  │  ┌───────────────────────────────────────────────────────────────┐  │              │
 │  │  │  analyzeContract(code, contractAddress?)                      │  │              │
 │  │  │  1. Calls MCP Servers in parallel                            │  │              │
@@ -361,8 +354,8 @@ pnpm verify:updated
 │                                                                                           │
 │  1. User uploads contract code → Frontend (Audit Page)                                    │
 │  2. Frontend → POST /api/analyze { code, contractAddress? }                              │
-│  3. API Route → NullShotAuditorAgent.analyzeContract()                                  │
-│  4. NullShotAuditorAgent calls MCP servers in parallel:                                  │
+│  3. API Route → AdvancedAuditorAgent.analyzeContract()                                  │
+│  4. AdvancedAuditorAgent calls MCP servers in parallel:                                  │
 │     ├─ SlitherMCP.analyze() → Static analysis                                            │
 │     ├─ DeFiDataMCP.getHistoricalExploits() → Exploit correlation                        │
 │     └─ BlockchainMCP.getContractInfo() → On-chain data (if address provided)            │
@@ -398,18 +391,84 @@ pnpm verify:updated
   - `/api/gemini` - Direct Gemini API proxy
   - `/api/transactions` - Transaction history
 
-#### **3. AI Agents Layer (Nullshot MCP Architecture)**
-- **NullShotAuditorAgent**: Main agent orchestrating MCP servers and AI analysis
+#### **3. AI Agents Layer (MCP Architecture)**
+- **AdvancedAuditorAgent**: Main agent orchestrating MCP servers and AI analysis
 - **RiskAgent**: Calculates risk scores (0-100) and classifies risk levels
 - **RemediationAgent**: Generates secure code fixes for vulnerabilities
 - **AuditorAgent**: Legacy agent for basic analysis
 
 #### **4. MCP Servers Layer (Model Context Protocol)**
-- **Configuration**: `mcp.json` following official Nullshot schema
+- **Configuration**: `mcp.json` following Model Context Protocol specification
 - **SlitherMCP**: Static code analysis, vulnerability pattern detection
 - **BlockchainMCP**: On-chain data fetching via Thirdweb SDK and Basescan API
 - **DeFiDataMCP**: Historical exploit correlation and DeFi protocol data
 - **Execution**: Parallel execution via `Promise.allSettled()` for fault tolerance
+
+##### **How MCP Architecture Works**
+
+The Model Context Protocol (MCP) architecture is the core innovation that makes DeFiGuard AI's analysis so powerful. Here's how it works:
+
+**1. Parallel MCP Server Execution**
+When analyzing a contract, the `AdvancedAuditorAgent` simultaneously calls three specialized MCP servers:
+
+- **SlitherMCP Server** (`lib/mcp/slither-mcp.ts`):
+  - Performs static code analysis on the Solidity contract
+  - Detects known vulnerability patterns (reentrancy, overflow, access control issues)
+  - Analyzes code structure and identifies potential security weaknesses
+  - Returns structured vulnerability data with line numbers and severity levels
+
+- **BlockchainMCP Server** (`lib/mcp/blockchain-mcp.ts`):
+  - Fetches on-chain data when a contract address is provided
+  - Retrieves transaction history and contract verification status
+  - Analyzes contract interactions and token holder information
+  - Provides real-world context about the contract's deployment and usage
+
+- **DeFiDataMCP Server** (`lib/mcp/defi-data-mcp.ts`):
+  - Correlates contract patterns with historical exploits
+  - Matches vulnerabilities to real-world hacks (DAO Hack 2016, Parity Wallet, etc.)
+  - Provides exploit scenarios based on similar contracts that were compromised
+  - Enhances AI understanding with DeFi protocol security data
+
+**2. Context Aggregation**
+All MCP server responses are aggregated into a rich context string that includes:
+- Static analysis results from Slither
+- On-chain data and transaction patterns
+- Historical exploit correlations
+- Vulnerability pattern matches
+
+**3. Enhanced AI Analysis**
+The aggregated MCP context is injected into the Gemini AI prompt, providing the model with:
+- **Multi-dimensional analysis**: Not just code review, but real-world context
+- **Historical knowledge**: Understanding of how similar vulnerabilities were exploited
+- **On-chain validation**: Verification of contract behavior in production
+- **Pattern recognition**: Detection of vulnerabilities that static analysis alone might miss
+
+**4. Fault Tolerance**
+The system uses `Promise.allSettled()` to ensure that if one MCP server fails, the analysis continues with data from the other servers. This makes the system resilient and ensures partial failures don't break the entire analysis.
+
+**Example Flow:**
+```
+User submits contract → AdvancedAuditorAgent.analyzeContract()
+  ↓
+Parallel execution:
+  ├─ SlitherMCP.analyze() → Static analysis results
+  ├─ DeFiDataMCP.getHistoricalExploits() → Exploit correlations
+  └─ BlockchainMCP.getContractInfo() → On-chain data (if address provided)
+  ↓
+Context aggregation → buildMCPContext()
+  ↓
+Enhanced prompt with MCP data → Gemini AI
+  ↓
+Comprehensive vulnerability analysis with real-world context
+```
+
+This architecture combines the best of:
+- **Static Analysis** (Slither) for pattern detection
+- **On-Chain Intelligence** (Blockchain) for real-world validation
+- **Historical Knowledge** (DeFi) for exploit correlation
+- **AI Reasoning** (Gemini) for comprehensive understanding
+
+The result is a security analysis that's not just code review, but a comprehensive security assessment that understands both the code and its real-world implications.
 
 #### **5. AI/ML Layer**
 - **Provider**: Google Gemini 2.5 Flash (primary)
@@ -459,7 +518,7 @@ defiguard-ai/
 │   ├── audit/               # Audit-specific components
 │   └── dashboard/          # Dashboard widgets
 ├── lib/                    # Core logic
-│   ├── agents/             # Nullshot AI agents
+│   ├── agents/             # AI agents
 │   ├── mcp/                # MCP server implementations
 │   ├── gemini/             # Gemini API client
 │   └── thirdweb/           # Blockchain utilities
@@ -616,32 +675,90 @@ const txHash = await mintBadgeForContract(
 );
 ```
 
-## 🏆 NullShot Hacks Submission - Track 1b
+## 🤖 AI Agents & MCP Architecture
 
-This project is submitted to **NullShot Hacks Season 0 - Track 1b: Web App using Nullshot Platform**
+### 🎯 AI Agents Implemented
 
-### ✅ Requisitos Cumplidos
+1. **AdvancedAuditorAgent** - Analyzes smart contracts for vulnerabilities using Gemini AI with MCP integration
+2. **RiskAgent** - Calculates comprehensive risk scores
+3. **RemediationAgent** - Generates secure code fixes
 
-- ✅ **Publicación en Nullshot Platform** - Aplicación desplegable en Nullshot Jam
-- ✅ **Arquitectura MCP/Agentes** - 3 Agentes + 3 Servidores MCP implementados
-- ✅ **Integración Web3** - Contratos inteligentes, NFTs, tokens ERC-20
-- ✅ **Tag "Nullshot Hacks S0"** - Aplicado en la presentación
-- ✅ **Aplicación Web Completa** - Next.js 14 con todas las features
-- ✅ **AI-Powered** - Gemini 2.5 Flash para análisis de contratos
+### 🔌 MCP Servers Implemented
 
-### 🎯 Agentes Implementados
+DeFiGuard AI leverages the **Model Context Protocol (MCP)** architecture to provide multi-dimensional security analysis. The system integrates three specialized MCP servers that work in parallel to enhance AI-powered contract analysis:
 
-1. **AuditorAgent** - Analiza contratos inteligentes para vulnerabilidades
-2. **RiskAgent** - Calcula puntuaciones de riesgo comprehensivas
-3. **RemediationAgent** - Genera fixes de código seguros
+#### **1. SlitherMCP Server** (`lib/mcp/slither-mcp.ts`)
+- **Purpose**: Static code analysis and vulnerability pattern detection
+- **Capabilities**:
+  - Analyzes Solidity code structure and syntax
+  - Detects known vulnerability patterns (reentrancy, overflow, access control)
+  - Identifies code quality issues and gas optimization opportunities
+  - Provides line-by-line vulnerability mapping
+- **Integration**: Called automatically for every contract analysis
+- **Output**: Structured vulnerability data with severity levels and recommendations
 
-### 🔌 Servidores MCP Implementados (Framework Oficial Nullshot)
+#### **2. BlockchainMCP Server** (`lib/mcp/blockchain-mcp.ts`)
+- **Purpose**: On-chain data fetching and transaction analysis
+- **Capabilities**:
+  - Retrieves contract verification status from blockchain explorers
+  - Fetches transaction history and interaction patterns
+  - Analyzes token holder distribution and contract usage
+  - Validates contract behavior in production environment
+- **Integration**: Called when a contract address is provided (optional)
+- **Output**: Real-world contract usage data and on-chain validation
 
-1. **SlitherMCP** - Análisis estático de contratos Solidity
-2. **BlockchainMCP** - Obtención de datos on-chain y transacciones
-3. **DeFiDataMCP** - Datos DeFi e historial de exploits
+#### **3. DeFiDataMCP Server** (`lib/mcp/defi-data-mcp.ts`)
+- **Purpose**: Historical exploit correlation and DeFi security intelligence
+- **Capabilities**:
+  - Correlates contract patterns with historical exploits
+  - Matches vulnerabilities to real-world hacks (DAO Hack 2016, Parity Wallet, etc.)
+  - Provides exploit scenarios based on similar compromised contracts
+  - Enhances AI understanding with DeFi protocol security data
+- **Integration**: Called automatically for every contract analysis
+- **Output**: Historical exploit correlations and real-world attack scenarios
 
-**✅ Configuración Oficial:** Este proyecto usa el framework oficial de Nullshot con `@nullshot/cli` y archivo `mcp.json` configurado según el schema oficial.
+### 🚀 How MCP Architecture Enhances AI Analysis
+
+The power of DeFiGuard AI comes from the seamless integration of MCP servers with Gemini AI:
+
+**Step 1: Parallel Data Collection**
+```
+Contract Code Submitted
+    ↓
+AdvancedAuditorAgent triggers parallel MCP calls:
+    ├─ SlitherMCP → Static analysis results
+    ├─ DeFiDataMCP → Historical exploit data
+    └─ BlockchainMCP → On-chain data (if address provided)
+```
+
+**Step 2: Context Enrichment**
+All MCP server responses are aggregated into a comprehensive context that includes:
+- Static analysis findings (vulnerability patterns, code quality)
+- Historical exploit correlations (similar vulnerabilities that were exploited)
+- On-chain validation (real-world contract behavior and usage)
+
+**Step 3: Enhanced AI Prompt**
+The enriched context is injected into the Gemini AI prompt, providing:
+- **Multi-dimensional understanding**: Not just code review, but real-world context
+- **Historical knowledge**: Understanding of how similar vulnerabilities were exploited
+- **Pattern recognition**: Detection of vulnerabilities that static analysis alone might miss
+- **Contextual recommendations**: Fixes based on proven solutions from similar cases
+
+**Step 4: Comprehensive Analysis**
+Gemini AI processes the enriched context and generates:
+- Detailed vulnerability reports with exploit scenarios
+- Risk scores based on both code analysis and historical data
+- Secure code fixes informed by real-world exploit patterns
+- Best practices recommendations validated by on-chain data
+
+**Benefits of MCP Architecture:**
+- ✅ **Fault Tolerance**: Uses `Promise.allSettled()` - partial failures don't break analysis
+- ✅ **Performance**: Parallel execution reduces analysis time
+- ✅ **Accuracy**: Multi-dimensional analysis catches more vulnerabilities
+- ✅ **Context**: Real-world data enhances AI understanding
+- ✅ **Scalability**: Easy to add new MCP servers for additional capabilities
+
+**✅ MCP Configuration:** This project implements Model Context Protocol (MCP) with `mcp.json` configuration file for seamless MCP server integration.
 
 ### ⛓️ Web3 Integration
 
@@ -736,7 +853,6 @@ This project is submitted to **NullShot Hacks Season 0 - Track 1b: Web App using
 
 ### Live Deployment
 
-- **Nullshot Jam**: [nullshot.ai/app/defiguard](https://nullshot.ai/app/defiguard)
 - **Vercel**: [defiguard-ai.vercel.app](https://defiguard-ai.vercel.app)
 - **GitHub**: [github.com/yourusername/defiguard-ai](https://github.com/yourusername/defiguard-ai)
 
@@ -793,16 +909,14 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## 🙏 Acknowledgments
 
-- **NullShot** for the amazing hackathon and framework
-- **Edenlayer** for MCP architecture inspiration
 - **Thirdweb** for blockchain infrastructure
 - **Google** for Gemini 2.5 Flash API access
 - **OpenZeppelin** for secure contract libraries
+- **Model Context Protocol** for MCP architecture specification
 
 ## 📞 Contact
 
 - Twitter: [@defiguard_ai](https://twitter.com/defiguard_ai)
-- Discord: [Join NullShot](https://discord.gg/nullshot)
 - Email: security@defiguard.ai
 
 ---

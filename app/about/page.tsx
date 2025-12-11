@@ -38,7 +38,7 @@ export default function AboutPage() {
             <p className="text-muted-foreground leading-relaxed">
               DeFiGuard AI was created to democratize smart contract security auditing. We believe that every developer, 
               regardless of their budget or team size, should have access to enterprise-grade security analysis. Our platform 
-              leverages cutting-edge AI technology powered by GEMINI IA and the MCP NullShot Architecture to provide instant, 
+              leverages cutting-edge AI technology powered by Gemini AI and MCP Architecture to provide instant, 
               comprehensive security audits that help prevent costly vulnerabilities before deployment.
             </p>
           </CardContent>
@@ -56,21 +56,30 @@ export default function AboutPage() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <GeminiBadge variant="compact" />
-                <span className="font-semibold">GEMINI IA + MCP NullShot Architecture</span>
+                <span className="font-semibold">Gemini AI + MCP Architecture</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 Powered by Google's Gemini AI models with multi-model fallback system for maximum reliability. 
-                Built on the NullShot Framework using Model Context Protocol (MCP) for seamless AI agent interoperability.
+                Built using Model Context Protocol (MCP) for seamless AI agent interoperability.
               </p>
             </div>
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="h-5 w-5 text-primary" />
-                <span className="font-semibold">Integrated MCP Servers</span>
+                <span className="font-semibold">MCP Architecture with 3 Specialized Servers</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                Enhanced security analysis through integrated MCP servers including Slither for static analysis, 
-                Blockchain data providers, and DeFi exploit databases for comprehensive vulnerability detection.
+              <p className="text-sm text-muted-foreground mb-3">
+                Enhanced security analysis through Model Context Protocol (MCP) architecture with three specialized servers:
+              </p>
+              <ul className="text-sm text-muted-foreground space-y-2 ml-4 list-disc">
+                <li><strong className="text-white">SlitherMCP:</strong> Static code analysis and vulnerability pattern detection</li>
+                <li><strong className="text-white">BlockchainMCP:</strong> On-chain data fetching and transaction analysis</li>
+                <li><strong className="text-white">DeFiDataMCP:</strong> Historical exploit correlation and DeFi security intelligence</li>
+              </ul>
+              <p className="text-sm text-muted-foreground mt-3">
+                All three servers execute in parallel, aggregating their results into a rich context that enhances Gemini AI's 
+                understanding. This multi-dimensional approach combines static analysis, real-world validation, and historical 
+                knowledge to provide comprehensive security assessments.
               </p>
             </div>
             <div>
@@ -128,7 +137,7 @@ export default function AboutPage() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              DeFiGuard AI was built for NullShot Hacks Season 0 by a passionate team dedicated to making blockchain security 
+              DeFiGuard AI was built by a passionate team dedicated to making blockchain security 
               accessible to everyone.
             </p>
             <div className="flex items-center gap-4">

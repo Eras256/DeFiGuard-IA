@@ -3,7 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['nullshot.ai'],
   },
   env: {
     NEXT_PUBLIC_APP_NAME: 'DeFiGuard AI',

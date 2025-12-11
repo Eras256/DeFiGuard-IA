@@ -60,7 +60,7 @@ const apiEndpoints = [
   {
     method: "POST",
     path: "/api/analyze",
-    description: "Analyze a smart contract for security vulnerabilities using GEMINI IA + MCP NullShot Architecture",
+    description: "Analyze a smart contract for security vulnerabilities using Gemini AI + MCP Architecture",
     parameters: [
       { name: "code", type: "string", required: true, description: "Solidity source code of the contract" },
       { name: "contractAddress", type: "string", required: false, description: "Contract address (optional)" },
@@ -149,6 +149,114 @@ export default function APIDocumentationPage() {
             <div className="bg-black/30 rounded-lg p-4">
               <p className="text-sm text-gray-400 mb-2">Base URL:</p>
               <code className="text-sm text-primary">https://your-domain.com/api</code>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* MCP Architecture Explanation */}
+        <Card className="glass mb-8 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Terminal className="h-5 w-5 text-primary" />
+              MCP Architecture: How It Works
+            </CardTitle>
+            <CardDescription>
+              Understanding the Model Context Protocol integration that powers DeFiGuard AI
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <h3 className="font-semibold mb-3 text-primary">What is MCP Architecture?</h3>
+              <p className="text-muted-foreground mb-4">
+                DeFiGuard AI uses <strong className="text-white">Model Context Protocol (MCP)</strong> to enhance AI analysis 
+                with specialized data sources. When you submit a contract for analysis, three MCP servers work in parallel to 
+                provide comprehensive security insights.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-black/30 rounded-lg p-4 border border-primary/10">
+                <h4 className="font-semibold mb-2 text-cyber-blue">1. SlitherMCP Server</h4>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Performs static code analysis on your Solidity contract:
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+                  <li>Detects known vulnerability patterns (reentrancy, overflow, access control)</li>
+                  <li>Analyzes code structure and identifies security weaknesses</li>
+                  <li>Provides line-by-line vulnerability mapping with severity levels</li>
+                  <li>Identifies gas optimization opportunities</li>
+                </ul>
+              </div>
+
+              <div className="bg-black/30 rounded-lg p-4 border border-primary/10">
+                <h4 className="font-semibold mb-2 text-cyber-purple">2. BlockchainMCP Server</h4>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Fetches on-chain data when a contract address is provided:
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+                  <li>Retrieves contract verification status from blockchain explorers</li>
+                  <li>Fetches transaction history and interaction patterns</li>
+                  <li>Analyzes token holder distribution and contract usage</li>
+                  <li>Validates contract behavior in production environment</li>
+                </ul>
+              </div>
+
+              <div className="bg-black/30 rounded-lg p-4 border border-primary/10">
+                <h4 className="font-semibold mb-2 text-cyber-green">3. DeFiDataMCP Server</h4>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Correlates contract patterns with historical exploits:
+                </p>
+                <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+                  <li>Matches vulnerabilities to real-world hacks (DAO Hack 2016, Parity Wallet, etc.)</li>
+                  <li>Provides exploit scenarios based on similar compromised contracts</li>
+                  <li>Enhances AI understanding with DeFi protocol security data</li>
+                  <li>Offers historical context for vulnerability assessment</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-primary/10 to-cyber-purple/10 rounded-lg p-4 border border-primary/20">
+              <h4 className="font-semibold mb-3 text-white">How MCP Enhances AI Analysis</h4>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>
+                  <strong className="text-white">Step 1:</strong> All three MCP servers execute in parallel, collecting 
+                  static analysis, on-chain data, and historical exploit information.
+                </p>
+                <p>
+                  <strong className="text-white">Step 2:</strong> The collected data is aggregated into a rich context that 
+                  includes vulnerability patterns, real-world usage, and historical correlations.
+                </p>
+                <p>
+                  <strong className="text-white">Step 3:</strong> This enriched context is injected into the Gemini AI prompt, 
+                  providing the model with multi-dimensional understanding beyond simple code review.
+                </p>
+                <p>
+                  <strong className="text-white">Step 4:</strong> Gemini AI generates comprehensive vulnerability reports that 
+                  combine code analysis, real-world validation, and historical knowledge.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-black/30 rounded-lg p-4">
+              <h4 className="font-semibold mb-2 text-primary">Benefits</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                <div className="flex items-start gap-2">
+                  <span className="text-cyber-green">✓</span>
+                  <span className="text-muted-foreground">Fault tolerant - partial failures don't break analysis</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-cyber-green">✓</span>
+                  <span className="text-muted-foreground">Parallel execution for faster results</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-cyber-green">✓</span>
+                  <span className="text-muted-foreground">Multi-dimensional analysis catches more vulnerabilities</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-cyber-green">✓</span>
+                  <span className="text-muted-foreground">Real-world context enhances AI understanding</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

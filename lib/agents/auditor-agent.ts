@@ -19,7 +19,7 @@ export class AuditorAgent {
       const aiAnalysis = await analyzeContractWithGemini(code);
       
       // Static analysis would go here (Slither, Aderyn, etc.)
-      // For hackathon, we focus on AI analysis
+      // Focus on AI analysis
       
       console.log(`[AuditorAgent] ✅ Analysis complete. Found ${aiAnalysis.vulnerabilities.length} vulnerabilities`);
       

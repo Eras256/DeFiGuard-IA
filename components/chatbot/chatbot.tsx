@@ -18,7 +18,7 @@ export function Chatbot() {
     {
       id: "1",
       role: "assistant",
-      content: "Hello! I'm DeFiGuard AI, your smart contract security assistant powered by GEMINI IA + MCP NullShot Architecture. How can I help you today?",
+      content: "Hello! I'm DeFiGuard AI, your smart contract security assistant powered by Gemini AI + MCP Architecture. How can I help you today?",
       timestamp: new Date(),
     },
   ]);
@@ -176,7 +176,7 @@ export function Chatbot() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white text-sm sm:text-base">DeFiGuard AI</h3>
-                  <p className="text-xs text-gray-400 hidden sm:block">GEMINI IA + MCP NullShot</p>
+                  <p className="text-xs text-gray-400 hidden sm:block">Gemini AI + MCP</p>
                 </div>
               </div>
               <button
@@ -277,7 +277,7 @@ export function Chatbot() {
                 </button>
               </div>
               <p className="text-xs text-gray-500 mt-2 text-center">
-                Powered by GEMINI IA + MCP NullShot Architecture
+                Powered by Gemini AI + MCP Architecture
               </p>
             </div>
           </motion.div>

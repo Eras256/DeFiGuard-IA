@@ -28,7 +28,7 @@ const tutorials = [
       },
       {
         title: "Review Analysis Results",
-        description: "Examine the risk score, vulnerabilities, and recommendations provided by GEMINI IA",
+        description: "Examine the risk score, vulnerabilities, and recommendations provided by Gemini AI",
         details: "The analysis includes detailed vulnerability descriptions, severity levels, and suggested fixes. Risk scores range from 0-100.",
       },
       {

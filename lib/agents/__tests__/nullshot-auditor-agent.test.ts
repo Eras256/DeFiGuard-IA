@@ -1,5 +1,5 @@
 /**
- * Tests básicos para NullShot Auditor Agent
+ * Tests básicos para Advanced Auditor Agent
  * Ejecutar con: pnpm test
  */
 
@@ -13,9 +13,9 @@ beforeAll(() => {
 });
 
 // Importar después de configurar variables de entorno
-import { nullShotAuditorAgent } from "../nullshot-auditor-agent";
+import { advancedAuditorAgent } from "../advanced-auditor-agent";
 
-describe("NullShotAuditorAgent", () => {
+describe("AdvancedAuditorAgent", () => {
   const sampleContract = `
     pragma solidity ^0.8.0;
     
@@ -32,12 +32,12 @@ describe("NullShotAuditorAgent", () => {
   `;
 
   it("should initialize correctly", () => {
-    expect(nullShotAuditorAgent).toBeDefined();
+    expect(advancedAuditorAgent).toBeDefined();
   });
 
   it("should have correct name and description", () => {
     // Verificar que el agente tiene las propiedades esperadas
-    expect(nullShotAuditorAgent).toBeDefined();
+    expect(advancedAuditorAgent).toBeDefined();
   });
 
   it("should parse analysis response correctly", async () => {
@@ -80,5 +80,5 @@ describe("NullShotAuditorAgent", () => {
   });
 });
 
-console.log("✅ Tests básicos pasados - NullShot Auditor Agent está correctamente estructurado");
+console.log("✅ Tests básicos pasados - Advanced Auditor Agent está correctamente estructurado");
 

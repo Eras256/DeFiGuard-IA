@@ -449,7 +449,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
               <span className="text-lg sm:text-xl font-bold">Security Analysis Complete</span>
             </span>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-              <GeminiBadge model="GEMINI IA + MCP NULLSHOT" variant="compact" />
+              <GeminiBadge model="GEMINI AI + MCP" variant="compact" />
               <div className="flex items-center gap-2">
                 <span className="text-lg sm:text-2xl font-bold">Risk Score:</span>
                 <span className={`text-2xl sm:text-4xl font-bold ${getRiskScoreColor(analysis.riskScore)}`}>
@@ -461,7 +461,7 @@ export function AnalysisResults({ analysis, contractAddress, contractCode, model
           <CardDescription>
             {analysis.summary}
             <span className="block mt-2 text-xs text-gray-500">
-              Analysis powered by GEMINI IA + MCP NullShot Architecture
+              Analysis powered by Gemini AI + MCP Architecture
             </span>
           </CardDescription>
         </CardHeader>

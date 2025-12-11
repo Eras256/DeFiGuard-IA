@@ -129,7 +129,7 @@ export default function TermsOfServicePage() {
             <div>
               <h3 className="font-semibold mb-2">4.1. AI-Powered Analysis</h3>
               <p className="text-muted-foreground text-sm">
-                Our Service uses artificial intelligence (GEMINI IA + MCP NullShot Architecture) to analyze smart contract 
+                Our Service uses artificial intelligence (Gemini AI + MCP Architecture) to analyze smart contract 
                 code for security vulnerabilities. The analysis is provided "as-is" and is based on automated scanning and 
                 pattern recognition.
               </p>

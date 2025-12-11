@@ -20,7 +20,7 @@ const features = [
   {
     icon: Cpu,
     title: "AI Analysis",
-    description: "GEMINI IA + MCP NullShot Architecture analyzes contracts using AI SDK with multi-model fallback system. Integrates MCP servers (Slither, Blockchain, DeFi) for comprehensive security insights.",
+    description: "Gemini AI + MCP Architecture analyzes contracts using AI SDK with multi-model fallback system. Integrates MCP servers (Slither, Blockchain, DeFi) for comprehensive security insights.",
     gemini: true,
   },
   {
@@ -60,8 +60,8 @@ const features = [
   },
   {
     icon: Network,
-    title: "MCP NullShot Architecture",
-    description: "Built on NullShot Framework with Model Context Protocol (MCP) for seamless AI agent interoperability. Integrated MCP servers provide enhanced security insights.",
+    title: "MCP Architecture",
+    description: "Built with Model Context Protocol (MCP) for seamless AI agent interoperability. Integrated MCP servers provide enhanced security insights.",
   },
 ];
 
@@ -79,7 +79,7 @@ export function Features() {
           <span className="gradient-text">Advanced Security Features</span>
         </h2>
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
-          Enterprise-level smart contract auditing powered by GEMINI IA + MCP NullShot Architecture using AI SDK and integrated MCP servers
+          Enterprise-level smart contract auditing powered by Gemini AI + MCP Architecture using AI SDK and integrated MCP servers
         </p>
       </motion.div>
 

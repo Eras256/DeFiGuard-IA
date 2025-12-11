@@ -18,7 +18,7 @@ const blogPosts = [
   {
     id: 2,
     title: "How AI is Revolutionizing Smart Contract Auditing",
-    excerpt: "Discover how GEMINI IA and MCP NullShot Architecture are transforming the way we audit smart contracts.",
+    excerpt: "Discover how Gemini AI and MCP Architecture are transforming the way we audit smart contracts.",
     date: "December 10, 2025",
     readTime: "7 min read",
     category: "Technology",

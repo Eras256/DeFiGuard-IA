@@ -13,12 +13,12 @@ if (typeof process !== 'undefined' && process.env) {
 }
 
 /**
- * Auditor Agent usando NullShot Framework con AI SDK y Gemini
- * Integra servidores MCP para análisis completo
+ * Advanced Auditor Agent using AI SDK and Gemini
+ * Integrates MCP servers for comprehensive analysis
  */
-export class NullShotAuditorAgent {
-  private name: string = "NullShotSmartContractAuditor";
-  private description: string = "Analyzes smart contracts using GEMINI IA + MCP NullShot Architecture";
+export class AdvancedAuditorAgent {
+  private name: string = "AdvancedSmartContractAuditor";
+  private description: string = "Analyzes smart contracts using Gemini AI with MCP Architecture";
   private version: string = "2.0.0";
 
   // Modelos en orden de preferencia (fallback multi-modelo)
@@ -31,13 +31,13 @@ export class NullShotAuditorAgent {
   ];
 
   /**
-   * Analiza un contrato usando Gemini IA + MCP NullShot Architecture
+   * Analiza un contrato usando Gemini AI con arquitectura MCP
    */
   async analyzeContract(
     code: string,
     contractAddress?: string
   ): Promise<VulnerabilityAnalysis & { modelUsed: string; mcpData?: any }> {
-    console.log("[NullShotAuditorAgent] 🔍 Starting analysis with GEMINI IA + MCP NullShot Architecture...");
+    console.log("[AdvancedAuditorAgent] 🔍 Starting analysis with Gemini AI + MCP Architecture...");
 
     // Get additional data from MCP servers (always run Slither and DeFi, Blockchain only if address exists)
     let mcpContext = "";
@@ -60,13 +60,13 @@ export class NullShotAuditorAgent {
       const blockchainData = contractAddress ? mcpResults[2] : { status: "fulfilled" as const, value: null };
 
       mcpContext = this.buildMCPContext(slitherData, blockchainData, defiData);
-      console.log("[NullShotAuditorAgent] ✅ MCP data collected from servers:", {
+      console.log("[AdvancedAuditorAgent] ✅ MCP data collected from servers:", {
         slither: slitherData.status === "fulfilled" ? "✓" : "✗",
         defi: defiData.status === "fulfilled" ? "✓" : "✗",
         blockchain: contractAddress ? (blockchainData.status === "fulfilled" ? "✓" : "✗") : "N/A",
       });
     } catch (error) {
-      console.warn("[NullShotAuditorAgent] ⚠️ MCP data collection failed:", error);
+      console.warn("[AdvancedAuditorAgent] ⚠️ MCP data collection failed:", error);
     }
 
     // Construir prompt con contexto MCP
@@ -78,7 +78,7 @@ export class NullShotAuditorAgent {
 
     for (const modelName of this.modelsToTry) {
       try {
-        console.log(`[NullShotAuditorAgent] Attempting model: ${modelName}`);
+        console.log(`[AdvancedAuditorAgent] Attempting model: ${modelName}`);
 
         const model = google(modelName);
         const result = await generateText({
@@ -90,7 +90,7 @@ export class NullShotAuditorAgent {
         const analysis = this.parseAnalysisResponse(result.text);
         modelUsed = modelName;
         
-        console.log(`[NullShotAuditorAgent] ✅ Analysis complete using ${modelName}. Found ${analysis.vulnerabilities.length} vulnerabilities`);
+        console.log(`[AdvancedAuditorAgent] ✅ Analysis complete using ${modelName}. Found ${analysis.vulnerabilities.length} vulnerabilities`);
 
         return {
           ...analysis,
@@ -106,7 +106,7 @@ export class NullShotAuditorAgent {
         };
       } catch (error: any) {
         lastError = error;
-        console.warn(`[NullShotAuditorAgent] ⚠️ Model ${modelName} failed:`, error.message);
+        console.warn(`[AdvancedAuditorAgent] ⚠️ Model ${modelName} failed:`, error.message);
         
         // If it's an authentication error, don't try other models
         if (error.message?.includes("API key") || error.message?.includes("401") || error.message?.includes("403")) {
@@ -150,7 +150,7 @@ export class NullShotAuditorAgent {
    * Builds the analysis prompt with MCP context
    */
   private buildAnalysisPrompt(code: string, mcpContext: string): string {
-    return `You are an expert smart contract security auditor using GEMINI IA + MCP NullShot Architecture. Analyze this Solidity code for vulnerabilities.
+    return `You are an expert smart contract security auditor using Gemini AI with MCP Architecture. Analyze this Solidity code for vulnerabilities.
 
 IMPORTANT: Respond ONLY with valid JSON. No markdown, no code blocks, no explanations outside JSON.
 
@@ -221,11 +221,11 @@ Find ALL vulnerabilities including:
         summary: parsed.summary || "Analysis complete",
       };
     } catch (error: any) {
-      console.error("[NullShotAuditorAgent] JSON parsing error:", error);
+      console.error("[AdvancedAuditorAgent] JSON parsing error:", error);
       throw new Error(`Failed to parse analysis response: ${error.message}`);
     }
   }
 }
 
-export const nullShotAuditorAgent = new NullShotAuditorAgent();
+export const advancedAuditorAgent = new AdvancedAuditorAgent();
 
